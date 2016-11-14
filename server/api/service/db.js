@@ -56,18 +56,26 @@ export function saveUser(user, callback) {
         });
 }
 
-export function saveSite(site, callback) {
-    return connect()
-        .then(conn => {
-            site.added = new Date();
-            return r
-                .table('sites')
-                .insert(site).run(conn)
-                .then((result, err) => {
-                    if (err) {
-                        callback(err);
-                    }
-                    return (result.inserted === 1) ? callback(null, true, result.generated_keys[0]) : callback(null, false);
-                });
-        });
+// sites
+
+export async function getSite(siteId) {
+    const connection = await connect();
+    return await r
+        .table('sites')
+        .get(siteId).run(connection);
+}
+
+export async function saveSite(site) {
+    const connection = await connect();
+    try {
+        site.added = new Date();
+        const result = await r
+            .table('sites')
+            .insert(site).run(connection);
+        site.id = result.generated_keys[0];
+        return site;
+    } catch (e) {
+        console.log(e);
+        return site;
+    }
 }

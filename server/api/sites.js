@@ -2,7 +2,7 @@
  * Crafted by x22a on 14.11.16.
  */
 
-import { GraphQLString, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLNonNull, GraphQLInt } from 'graphql'
+import { GraphQLString, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLNonNull } from 'graphql'
 import * as db from './service/db'
 
 const SiteType = new GraphQLObjectType({
@@ -29,12 +29,12 @@ const QueryType = new GraphQLObjectType({
             args: {
                 id: {
                     name: 'id',
-                    type: new GraphQLNonNull(GraphQLInt)
+                    type: new GraphQLNonNull(GraphQLString)
                 }
             },
-            resolve: (root, { id }) => {
+            resolve: async (root, { id }) => {
                 console.log(root);
-                return { id, destinations: ['foo1'], url: '' };
+                return await db.getSite(id);
             }
         },
         addSite: {
@@ -49,18 +49,9 @@ const QueryType = new GraphQLObjectType({
                     type: new GraphQLNonNull(GraphQLString)
                 }
             },
-            resolve: (root, { destinations, url }) => {
+            resolve: async (root, { destinations, url }) => {
                 const site = { destinations, url };
-                db.saveSite(site, (err, inserted, id) => {
-                    if (err) {
-                        return { error: err }
-                    } else if (!inserted) {
-                        return { error: 'Not inserted' }
-                    }
-                    site.id = id;
-                    console.log(site);
-                    return { id, destinations: ['foo1'], url: '' };
-                })
+                return await db.saveSite(site)
             }
         }
     })
