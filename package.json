@@ -1,7 +1,7 @@
 {
-  "name": "post3ree-boilerplate",
-  "version": "0.3.1",
-  "description": "Boilerplate for nodejs universal application using 3REE stack + PostCSS",
+  "name": "roland",
+  "version": "0.0.1",
+  "description": "Simple webapp to build and send e-mails",
   "main": "server.js",
   "scripts": {
     "build:prod": "NODE_ENV=production webpack",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com:hex22a/post3ree-boilerplate.git"
+    "url": "git+ssh://git@github.com:hex22a/roland.git"
   },
   "keywords": [
     "boilerplate",
@@ -28,9 +28,9 @@
     "jwt",
     "example"
   ],
-  "author": "Stdio.Digital",
+  "author": "Crafted.",
   "license": "MIT",
-  "homepage": "https://github.com/hex22a/post3ree-boilerplate#post3ree-boilerplate",
+  "homepage": "https://github.com/hex22a/roland#roland",
   "jest": {
     "verbose": true,
     "moduleNameMapper": {
@@ -38,7 +38,7 @@
       "^.+\\.(css|less|pcss)$": "identity-obj-proxy"
     }
   },
-  "devDependencies": {
+  "dependencies": {
     "autoprefixer": "^6.3.6",
     "babel": "^6.5.2",
     "babel-cli": "^6.5.1",
@@ -75,6 +75,7 @@
     "express-session": "^1.13.0",
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
+    "forever": "^0.15.3",
     "history": "^4.3.0",
     "http": "0.0.0",
     "identity-obj-proxy": "^3.0.0",
@@ -121,8 +122,5 @@
     "webpack-dev-server": "^1.14.1",
     "xmlhttprequest": "^1.8.0",
     "xss": "^0.2.10"
-  },
-  "dependencies": {
-    "forever": "^0.15.2"
   }
 }
