@@ -7,6 +7,7 @@ import ContainerWrapperHOC from './ContainerWrapperHOC'
 import Container from '../components/Container/Container'
 import Menu from '../components/Menu/Menu'
 
+@ContainerWrapperHOC
 export class Main extends Component {
     render() {
         return (
@@ -18,4 +19,4 @@ export class Main extends Component {
     }
 }
 
-export default connect(() => ({}))(ContainerWrapperHOC(Main))
+export default connect(() => ({}))(Main)
