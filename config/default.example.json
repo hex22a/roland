@@ -1,0 +1,13 @@
+{
+  "rethinkdb": {
+    "host": "localhost",
+    "port": 28015,
+    "db": "roland"
+  },
+  "express": {
+    "host": "localhost",
+    "port": 3000
+  },
+  "buildDirectory": "build",
+  "jwtSecret": "GSdw54Pj5011"
+}
