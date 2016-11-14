@@ -1,4 +1,4 @@
-import * as service from './service/db';
+import * as service from './service/db'
 
 export function addProject(req, res) {
     service.addProject(req.body)

@@ -1,21 +1,21 @@
-import r from 'rethinkdb';
-import config from 'config';
+import r from 'rethinkdb'
+import config from 'config'
 
 const rethinkdb = config.get('rethinkdb');
-const DATABASE = rethinkdb.db || 'boilerplate';
-const TABLES = ['users'];
+const DATABASE = rethinkdb.db;
+const TABLES = ['users', 'sites'];
 
 r.connect(rethinkdb)
 .then(conn => {
     console.log(' [-] Database Setup');
     return createDbIfNotExists(conn)
-    .then(() => Promise.all(TABLES.map((table) => createTableIfNotExists(conn, table))))
+    .then(() => Promise.all(TABLES.map(table => createTableIfNotExists(conn, table))))
     .then(() => closeConnection(conn));
 });
 
 function createDbIfNotExists(conn) {
     return getDbList(conn)
-    .then((list) => {
+    .then(list => {
         if (list.indexOf(DATABASE) === -1) {
             return createDatabase(conn);
         }
@@ -26,7 +26,7 @@ function createDbIfNotExists(conn) {
 
 function createTableIfNotExists(conn, table) {
     return getTableList(conn)
-    .then((list) => {
+    .then(list => {
         if (list.indexOf(table) === -1) {
             return createTable(conn, table);
         }

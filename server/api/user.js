@@ -2,13 +2,13 @@
  * Created by hex22a on 31.03.16.
  * user api
  */
-import passport from 'passport';
-import bcrypt from 'bcrypt';
+import passport from 'passport'
+import bcrypt from 'bcrypt'
 
-import jwt from 'jsonwebtoken';
-import config from 'config';
+import jwt from 'jsonwebtoken'
+import config from 'config'
 
-import * as db from './service/db';
+import * as db from './service/db'
 
 function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
