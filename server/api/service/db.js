@@ -1,5 +1,5 @@
-import r from 'rethinkdb';
-import config from 'config';
+import r from 'rethinkdb'
+import config from 'config'
 
 function connect() {
     return r.connect(config.get('rethinkdb'));
@@ -8,30 +8,27 @@ function connect() {
 // user CRU
 export function findUserByEmail(mail, callback) {
     return connect()
-        .then(conn => {
-            return r
+        .then(conn => r
                 .table('users')
                 .filter({ username: mail }).limit(1).run(conn)
                 .then((cursor, err) => {
                     if (err) {
                         callback(err);
                     } else {
-                        cursor.next((err, row) => {
-                            if (err) {
+                        cursor.next((cursorError, row) => {
+                            if (cursorError) {
                                 callback(null, null);
                             } else {
                                 callback(null, row);
                             }
                         });
                     }
-                });
-        });
+                }));
 }
 
 export function findUserById(userId, callback) {
     return connect()
-        .then(conn => {
-            return r
+        .then(conn => r
                 .table('users')
                 .get(userId).run(conn)
                 .then((result, err) => {
@@ -40,8 +37,7 @@ export function findUserById(userId, callback) {
                     } else {
                         callback(null, result);
                     }
-                });
-        });
+                }));
 }
 
 export function saveUser(user, callback) {
@@ -51,6 +47,22 @@ export function saveUser(user, callback) {
             return r
                 .table('users')
                 .insert(user).run(conn)
+                .then((result, err) => {
+                    if (err) {
+                        callback(err);
+                    }
+                    return (result.inserted === 1) ? callback(null, true, result.generated_keys[0]) : callback(null, false);
+                });
+        });
+}
+
+export function saveSite(site, callback) {
+    return connect()
+        .then(conn => {
+            site.added = new Date();
+            return r
+                .table('sites')
+                .insert(site).run(conn)
                 .then((result, err) => {
                     if (err) {
                         callback(err);

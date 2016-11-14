@@ -1,21 +1,22 @@
-import path from 'path';
-import bodyParser from 'body-parser';
-import webpack from 'webpack';
-import express from 'express';
-import expressSession from 'express-session';
-import http from 'http';
-import config from 'config';
+import path from 'path'
+import bodyParser from 'body-parser'
+import webpack from 'webpack'
+import express from 'express'
+import expressSession from 'express-session'
+import http from 'http'
+import config from 'config'
 
 import passport from 'passport';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import authCheckMiddleware from './server/middlewares/auth-check'
 import adminCheckMiddleware from './server/middlewares/admin-check'
+import graphqlHTTP from 'express-graphql'
 
-import * as api from './server/api/http';
-import * as userAPI from './server/api/user';
-import * as uni from './server/app.js';
-import * as db from './server/api/service/db';
-import webpackConfig from './webpack.config';
+import * as userAPI from './server/api/user'
+import schema from './server/api/sites'
+import * as uni from './server/app'
+import * as db from './server/api/service/db'
+import webpackConfig from './webpack.config'
 
 import strategies from './server/passport'
 
@@ -55,6 +56,11 @@ app.use(expressSession({
 }));
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use('/graphql', graphqlHTTP({
+    schema,
+    graphiql: true,
+}));
 
 app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'images', 'favicon.ico')));
