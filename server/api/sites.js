@@ -62,8 +62,8 @@ const MutationType = new GraphQLObjectType({
                     type: new GraphQLNonNull(GraphQLString)
                 }
             },
-            resolve: async(root, { destinations, url }) => {
-                const site = { destinations, url };
+            resolve: async(root, { destinations, url, name }) => {
+                const site = { destinations, url, name };
                 return await db.saveSite(site)
             }
         }
