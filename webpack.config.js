@@ -28,7 +28,10 @@ var output = {
 
 var plugins = [
     defineEnvPlugin,
-    new ExtractTextPlugin('app.css', { allChunks: true })
+    new ExtractTextPlugin({
+        filename: 'app.css',
+        allChunks: true
+    })
 ];
 
 var modulePreLoaders = [
@@ -49,11 +52,14 @@ var moduleLoaders = [
     },
     {
         test: /\.pcss$/i,
-        loader: ExtractTextPlugin.extract('style-loader', `css-loader?modules&localIdentName=[name]_[local]__[hash:base64:5]!postcss-loader`)
+        loader: ExtractTextPlugin.extract({
+            notExtractLoader: 'style-loader',
+            loader: 'css?modules&importLoaders=1&localIdentName=[name]_[local]__[hash:base64]!postcss'
+        })
     },
     {
         test: /\.css$/i,
-        loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+        loader: ExtractTextPlugin.extract({ notExtractLoader: 'style-loader', loader: 'css-loader'})
     },
     {
         test: /\.(jpe?g|png|gif)$/i,
