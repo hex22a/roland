@@ -12,6 +12,9 @@ const SiteType = new GraphQLObjectType({
         id: {
             type: GraphQLString
         },
+        name: {
+            type: GraphQLString
+        },
         destinations: {
             type: new GraphQLList(GraphQLString)
         },
@@ -36,10 +39,20 @@ const QueryType = new GraphQLObjectType({
                 console.log(root);
                 return await db.getSite(id);
             }
-        },
+        }
+    })
+});
+
+const MutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: () => ({
         addSite: {
             type: SiteType,
             args: {
+                name: {
+                    name: 'name',
+                    type: new GraphQLNonNull(GraphQLString)
+                },
                 destinations: {
                     name: 'destinations',
                     type: new GraphQLList(GraphQLString)
@@ -49,7 +62,7 @@ const QueryType = new GraphQLObjectType({
                     type: new GraphQLNonNull(GraphQLString)
                 }
             },
-            resolve: async (root, { destinations, url }) => {
+            resolve: async(root, { destinations, url }) => {
                 const site = { destinations, url };
                 return await db.saveSite(site)
             }
@@ -58,5 +71,6 @@ const QueryType = new GraphQLObjectType({
 });
 
 export default new GraphQLSchema({
-    query: QueryType
+    query: QueryType,
+    mutation: MutationType
 });
