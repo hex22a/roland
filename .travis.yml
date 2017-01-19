@@ -2,9 +2,8 @@ language: node_js
 sudo: false
 cache: yarn
 node_js:
-  - stable
-  - "6"
-  - "4"
+  - "6.1"
+  - "iojs"
 
 addons:
   apt:
@@ -13,8 +12,5 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
-    services:
-    - mysql
-    - redis
     env:
     - TRAVIS=travis CXX=g++-4.8
