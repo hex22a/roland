@@ -15,14 +15,13 @@ export async function getUser(userId) {
 
 export async function saveUser(user) {
     const connection = await connect();
-    try {
-        user.added = new Date();
-        await r
-            .table('users')
-            .insert(user).run(connection);
-        return user;
-    } catch (e) {
-        console.log(e);
+    user.added = new Date();
+    const qResult = await r
+        .table('users')
+        .insert(user).run(connection);
+    if (!qResult.inserted) {
+        throw new Error(`Errors ${qResult.errors}`)
+    } else {
         return user;
     }
 }

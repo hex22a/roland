@@ -2,7 +2,7 @@ Feature: Auth
   JWT based registration and auth
 
   Scenario Outline: Valid e-mail registration
-    When I send POST request to register with <email> and <password>
+    When I send POST request to register with <email> and <password> to register
     Then I can access new user by <email>
 
     Examples:
@@ -11,7 +11,7 @@ Feature: Auth
       | test@example.com    | yolo123   |
 
   Scenario: Busy e-mail registration
-    When I send POST request to register with example@example.com and anypassword
+    When I send POST request to register with example@example.com and anypassword to get error message
 
   Scenario Outline: Sign In
     When I send POST request to login with username: <email> and password: <password>

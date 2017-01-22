@@ -5,7 +5,7 @@
 import passport from 'passport'
 import bcrypt from 'bcrypt'
 
-import { GraphQLString, GraphQLObjectType, GraphQLSchema, GraphQLNonNull } from 'graphql'
+import { GraphQLString, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLNonNull } from 'graphql'
 import * as db from './service/db'
 
 const UserType = new GraphQLObjectType({
@@ -37,11 +37,19 @@ const QueryType = new GraphQLObjectType({
     })
 });
 
+const AddUserResult = new GraphQLObjectType({
+    name: 'AddUserResult',
+    fields: {
+        errors: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+        user: { type: UserType },
+    }
+});
+
 const MutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
         addUser: {
-            type: UserType,
+            type: AddUserResult,
             args: {
                 id: {
                     name: 'id',
@@ -53,10 +61,19 @@ const MutationType = new GraphQLObjectType({
                 }
             },
             resolve: async(root, { id, password }) => {
-                const user = { id };
+                let result = null;
+                const errors = [];
 
-                user.password = bcrypt.hashSync(password, 8);
-                return await db.saveUser(user);
+                const existing = await db.getUser(id);
+                if (existing) {
+                    errors.push('A user with this email address already exists.');
+                } else {
+                    const user = { id };
+
+                    user.password = bcrypt.hashSync(password, 8);
+                    result = await db.saveUser(user);
+                }
+                return { user: result, errors }
             }
         }
     })

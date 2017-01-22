@@ -1,6 +1,6 @@
 {
   "rethinkdb": {
-    "db": "boilerplate_test"
+    "db": "roland_test"
   },
   "express": {
     "host": "localhost",
