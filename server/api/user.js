@@ -5,9 +5,6 @@
 import passport from 'passport'
 import bcrypt from 'bcrypt'
 
-import jwt from 'jsonwebtoken'
-import config from 'config'
-
 import { GraphQLString, GraphQLObjectType, GraphQLSchema, GraphQLNonNull } from 'graphql'
 import * as db from './service/db'
 
@@ -16,9 +13,6 @@ const UserType = new GraphQLObjectType({
     description: 'User object',
     fields: () => ({
         id: {
-            type: GraphQLString
-        },
-        username: {
             type: GraphQLString
         },
         password: {
@@ -38,7 +32,7 @@ const QueryType = new GraphQLObjectType({
                     type: new GraphQLNonNull(GraphQLString)
                 }
             },
-            resolve: async (root, { id }) => await db.findUserById(id)
+            resolve: async (root, { id }) => await db.getUser(id)
         }
     })
 });
@@ -49,8 +43,8 @@ const MutationType = new GraphQLObjectType({
         addUser: {
             type: UserType,
             args: {
-                username: {
-                    name: 'username',
+                id: {
+                    name: 'id',
                     type: new GraphQLNonNull(GraphQLString)
                 },
                 password: {
@@ -58,8 +52,8 @@ const MutationType = new GraphQLObjectType({
                     type: new GraphQLNonNull(GraphQLString)
                 }
             },
-            resolve: async(root, { username, password }) => {
-                const user = { username };
+            resolve: async(root, { id, password }) => {
+                const user = { id };
 
                 user.password = bcrypt.hashSync(password, 8);
                 return await db.saveUser(user);
@@ -74,17 +68,6 @@ export default new GraphQLSchema({
 });
 
 /**
- * @deprecated
- * @param email
- * @returns {boolean}
- */
-function validateEmail(email) {
-    const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(email);
-}
-
-/**
- * @deprecated
  * @param req
  * @param res
  * @param next
@@ -115,94 +98,6 @@ export function logIn(req, res, next) {
 }
 
 /**
- * @deprecated
- * @param req
- * @param res
- */
-export function register(req, res) {
-    if (req.body.user == null) {
-        res.status(400);
-        res.json({ error: 'Bad request' });
-    }
-    if (!validateEmail(req.body.user.username)) {
-        // Probably not a good email address.
-        res.status(400);
-        res.json({ error: 'Not a valid email address!' });
-        return;
-    }
-
-    db.findUserByEmail(req.body.user.username,
-        (err, row) => {
-            if (err) {
-                res.status(400);
-                res.json({ error: 'Oops' });
-                return;
-            }
-
-            if (row) {
-                res.status(400);
-                res.json({ error: 'Email is already in Database' });
-            } else {
-                // salt hash password
-                const user = req.body.user;
-
-                user.password = bcrypt.hashSync(user.password, 8);
-
-                // Saving the new user to DB
-                db.saveUser(user,
-                    (savingError, saved, id) => {
-                        if ((savingError) || (!saved)) {
-                            res.status(400);
-                            res.json({ savingError });
-                        } else {
-                            res.json({ id });
-                        }
-                    }
-                );
-            }
-        });
-}
-
-/**
- * @deprecated
- * @param req
- * @param res
- */
-export function getUser(req, res) {
-    if (req.query.uuid == null && req.query.email == null && req.headers.authorization == null) {
-        res.status(400);
-        res.json({ error: 'Bad request' });
-    }
-
-    const sendResponse = (err, user) => {
-        if (err) {
-            res.status(400);
-            res.json({ err });
-        } else {
-            delete user.password;
-            res.json({ user });
-        }
-    };
-
-    if (req.query.uuid) {
-        db.findUserById(req.query.uuid, sendResponse)
-    } else if (req.query.email) {
-        db.findUserByEmail(req.query.email, sendResponse)
-    } else if (req.headers.authorization) {
-        const token = req.headers.authorization;
-        jwt.verify(token, config.jwtSecret, (err, decoded) => {
-            if (err) {
-                res.status(401);
-                res.json(null);
-            } else {
-                db.findUserById(decoded.sub, sendResponse);
-            }
-        });
-    }
-}
-
-/**
- * @deprecated
  * @param req
  * @param res
  */

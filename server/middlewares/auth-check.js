@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { findUserById } from '../api/service/db';
+import { getUser } from '../api/service/db';
 
 export default function (config) {
     return (req, res, next) => {
@@ -18,7 +18,7 @@ export default function (config) {
 
             // check if a user exists
             try {
-                await findUserById(userId);
+                await getUser(userId);
                 return next();
             } catch (e) {
                 return res.status(401).end();
