@@ -13,7 +13,7 @@ import adminCheckMiddleware from './server/middlewares/admin-check'
 import graphqlHTTP from 'express-graphql'
 
 import site from './server/api/sites'
-import users from './server/api/user'
+import users, { logIn, logOut } from './server/api/user'
 import * as uni from './server/app'
 import * as db from './server/api/service/db'
 import webpackConfig from './webpack.config'
@@ -39,7 +39,7 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (id, done) => {
     try {
-        const user = await db.findUserById(id);
+        const user = await db.getUser(id);
         done(null, user);
     } catch (e) {
         done(null, null);
@@ -74,7 +74,8 @@ app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'images'
 /* open api */
 
 /* api */
-
+app.post('/openapi/v1/login', logIn);
+app.get('/logout', logOut);
 /* admin api */
 
 /* universal app endpoint */

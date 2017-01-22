@@ -6,27 +6,7 @@ function connect() {
 }
 
 // user CRU
-export function findUserByEmail(mail, callback) {
-    return connect()
-        .then(conn => r
-                .table('users')
-                .filter({ username: mail }).limit(1).run(conn)
-                .then((cursor, err) => {
-                    if (err) {
-                        callback(err);
-                    } else {
-                        cursor.next((cursorError, row) => {
-                            if (cursorError) {
-                                callback(null, null);
-                            } else {
-                                callback(null, row);
-                            }
-                        });
-                    }
-                }));
-}
-
-export async function findUserById(userId) {
+export async function getUser(userId) {
     const connection = await connect();
     return await r
         .table('users')
@@ -37,10 +17,9 @@ export async function saveUser(user) {
     const connection = await connect();
     try {
         user.added = new Date();
-        const result = await r
+        await r
             .table('users')
             .insert(user).run(connection);
-        user.id = result.generated_keys[0];
         return user;
     } catch (e) {
         console.log(e);
