@@ -5,7 +5,7 @@ import jwt from 'jsonwebtoken';
 
 import * as db from '../api/service/db';
 
-export default function(config) {
+export default function (config) {
     const JsonStrategy = Json.Strategy;
 
     return new JsonStrategy({
@@ -18,21 +18,16 @@ export default function(config) {
                 if (!user) { return done(null, null, false, { message: `Unknown user: ${username}` }); }
 
                 if (bcrypt.compareSync(password, user.password)) {
-                    let payload = {
+                    const payload = {
                         sub: user.id,
                         role: user.role
                     };
-                    
-                    let token = jwt.sign(payload, config.jwtSecret);
 
-                    let userData = {
-                        name: user.name
-                    };
+                    const token = jwt.sign(payload, config.jwtSecret);
 
                     return done(null, token, user);
-                } else {
-                    return done(null, null, false, { message: 'Invalid username or password...' });
                 }
+                return done(null, null, false, { message: 'Invalid username or password...' });
             };
 
             db.findUserByEmail(username, validateUser);

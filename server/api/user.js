@@ -8,13 +8,87 @@ import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import config from 'config'
 
+import { GraphQLString, GraphQLObjectType, GraphQLSchema, GraphQLNonNull } from 'graphql'
 import * as db from './service/db'
 
+const UserType = new GraphQLObjectType({
+    name: 'User',
+    description: 'User object',
+    fields: () => ({
+        id: {
+            type: GraphQLString
+        },
+        username: {
+            type: GraphQLString
+        },
+        password: {
+            type: GraphQLString
+        }
+    })
+});
+
+const QueryType = new GraphQLObjectType({
+    name: 'Query',
+    fields: () => ({
+        user: {
+            type: UserType,
+            args: {
+                id: {
+                    name: 'id',
+                    type: new GraphQLNonNull(GraphQLString)
+                }
+            },
+            resolve: async (root, { id }) => await db.findUserById(id)
+        }
+    })
+});
+
+const MutationType = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: () => ({
+        addUser: {
+            type: UserType,
+            args: {
+                username: {
+                    name: 'username',
+                    type: new GraphQLNonNull(GraphQLString)
+                },
+                password: {
+                    name: 'password',
+                    type: new GraphQLNonNull(GraphQLString)
+                }
+            },
+            resolve: async(root, { username, password }) => {
+                const user = { username };
+
+                user.password = bcrypt.hashSync(password, 8);
+                return await db.saveUser(user);
+            }
+        }
+    })
+});
+
+export default new GraphQLSchema({
+    query: QueryType,
+    mutation: MutationType
+});
+
+/**
+ * @deprecated
+ * @param email
+ * @returns {boolean}
+ */
 function validateEmail(email) {
     const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
 }
 
+/**
+ * @deprecated
+ * @param req
+ * @param res
+ * @param next
+ */
 export function logIn(req, res, next) {
     // noinspection JSUnresolvedFunction
     passport.authenticate('json-login', (err, token, user) => {
@@ -40,6 +114,11 @@ export function logIn(req, res, next) {
     })(req, res, next);
 }
 
+/**
+ * @deprecated
+ * @param req
+ * @param res
+ */
 export function register(req, res) {
     if (req.body.user == null) {
         res.status(400);
@@ -84,6 +163,11 @@ export function register(req, res) {
         });
 }
 
+/**
+ * @deprecated
+ * @param req
+ * @param res
+ */
 export function getUser(req, res) {
     if (req.query.uuid == null && req.query.email == null && req.headers.authorization == null) {
         res.status(400);
@@ -117,6 +201,11 @@ export function getUser(req, res) {
     }
 }
 
+/**
+ * @deprecated
+ * @param req
+ * @param res
+ */
 export function logOut(req, res) {
     req.logout();
     res.json({ logout: true });

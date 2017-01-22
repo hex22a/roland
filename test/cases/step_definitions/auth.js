@@ -11,39 +11,16 @@ import Browser from '../../utils/Browser'
 
 const XMLHttpRequest = XHR.XMLHttpRequest;
 
+import { graphql } from 'graphql'
+import schema from '../../../server/api/user'
+
 const myStepDefinitionsWrapper = function stepDefinition() {
     const browser = Browser.instance;
 
     let error = false;
     let logout = false;
 
-
-    this.Given(/^I have an empty DB$/, () => {
-        console.warn('[x22a] Well it is given');
-    });
-
-    this.When(/^I send POST request to register with (.*) and (.*)$/, (email, password) => {
-        const xhr = new XMLHttpRequest();
-
-        const user = JSON.stringify({ user: {
-            username: email,
-            password,
-            role: 'user'
-        }
-        });
-
-        xhr.open('POST', `http://${config.express.host}:${config.express.port}/openapi/v1/register`, false);
-        xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(user);
-
-        if (xhr.status !== 200) {
-            throw new Error(`[Bad response] Code: ${xhr.status} Res: ${xhr.responseText}`);
-        } else {
-            browser.setId(JSON.parse(xhr.responseText).id);
-        }
-    });
-
-    this.Then(/^I get uuid of new user and I can access new user by uuid or (.*) \(no password, meta\-only\)$/, email => {
+    this.Then(/^I get uuid of new user and I can access new user by uuid or (.*) \(no password, meta-only\)$/, email => {
         const xhr = new XMLHttpRequest();
 
         let params = `uuid=${encodeURIComponent(browser.getId())}`;
@@ -188,6 +165,17 @@ const myStepDefinitionsWrapper = function stepDefinition() {
             if ({}.hasOwnProperty.call(result.user, 'password')) {
                 throw new Error('Password transfer detected!')
             }
+        }
+    });
+
+    this.When(/^I send POST request to register with (.*) and (.*)$/, async (email, password) => {
+        const query = `mutation AddUser{ addUser(username: "${email}", password: "${password}"){ id, username } }`;
+
+        const result = await graphql(schema, query);
+        if (result.error && result.errors.length > 0) {
+            throw new Error(`Errors: ${result.errors}`);
+        } else {
+            console.log(result.data.addUser);
         }
     });
 };

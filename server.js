@@ -12,8 +12,8 @@ import authCheckMiddleware from './server/middlewares/auth-check'
 import adminCheckMiddleware from './server/middlewares/admin-check'
 import graphqlHTTP from 'express-graphql'
 
-import * as userAPI from './server/api/user'
-import schema from './server/api/sites'
+import site from './server/api/sites'
+import users from './server/api/user'
 import * as uni from './server/app'
 import * as db from './server/api/service/db'
 import webpackConfig from './webpack.config'
@@ -37,8 +37,13 @@ passport.serializeUser((user, done) => {
     done(null, user.id);
 });
 
-passport.deserializeUser((id, done) => {
-    db.findUserById(id, done);
+passport.deserializeUser(async (id, done) => {
+    try {
+        const user = await db.findUserById(id);
+        done(null, user);
+    } catch (e) {
+        done(null, null);
+    }
 });
 
 app.set('views', path.join(__dirname, 'server', 'view'));
@@ -50,7 +55,7 @@ app.use(bodyParser.urlencoded({
 }));
 app.use(bodyParser.json());
 app.use(expressSession({
-    secret: 'let me down easy',
+    secret: 'gorillaz',
     resave: false,
     saveUninitialized: false,
 }));
@@ -58,7 +63,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/graphql', graphqlHTTP({
-    schema,
+    site,
+    users,
     graphiql: true,
 }));
 
@@ -66,10 +72,6 @@ app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.t
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'images', 'favicon.ico')));
 
 /* open api */
-app.post('/openapi/v1/register', userAPI.register);
-app.post('/openapi/v1/login', userAPI.logIn);
-app.get('/openapi/v1/user', userAPI.getUser);
-app.get('/logout', userAPI.logOut);
 
 /* api */
 
