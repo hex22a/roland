@@ -2,7 +2,6 @@ Feature: Auth
   JWT based registration and auth
 
   Scenario Outline: Valid e-mail registration
-    Given I have an empty DB
     When I send POST request to register with <email> and <password>
     Then I get uuid of new user and I can access new user by uuid or <email> (no password, meta-only)
 
