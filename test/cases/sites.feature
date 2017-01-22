@@ -1,8 +1,10 @@
 Feature: Sites
   Adding and removing sites
 
+  Scenario: Register Admin
+    Given I send POST request to register with admin@test.test and 123456 to register
+
   Scenario Outline: Adding site
-    When I send POST request to register with <email> and <password>
     Given I send POST request to login with username: <email> and password: <password>
     When User adds site with name: <siteName>, url: <url>, destinations: <destinations>
     Then User can get new site as an object

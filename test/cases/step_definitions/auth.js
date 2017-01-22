@@ -67,14 +67,29 @@ const myStepDefinitionsWrapper = function stepDefinition() {
         });
     });
 
-    this.When(/^I send POST request to register with (.*) and (.*)$/, async (email, password) => {
-        const query = `mutation AddUser{ addUser(id: "${email}", password: "${password}"){ id } }`;
+    this.When(/^I send POST request to register with (.*) and (.*) to register$/, async (email, password) => {
+        const query = `mutation AddUser{ addUser(id: "${email}", password: "${password}"){ user { id }, errors } }`;
 
         const result = await graphql(schema, query);
         if (result.error && result.errors.length > 0) {
             throw new Error(`Errors: ${result.errors}`);
+        } else if (result.data.addUser.user) {
+            console.log(result.data.addUser.user);
         } else {
-            console.log(result.data.addUser);
+            throw new Error(`Errors: ${result.data.addUser.errors}`);
+        }
+    });
+
+    this.When(/^I send POST request to register with (.*) and (.*) to get error message$/, async (email, password) => {
+        const query = `mutation AddUser{ addUser(id: "${email}", password: "${password}"){ user { id }, errors } }`;
+
+        const result = await graphql(schema, query);
+        if (result.error && result.errors.length > 0) {
+            throw new Error(`Errors: ${result.errors}`);
+        } else if (result.data.addUser.user) {
+            throw new Error(`User saved! ${result.data.addUser.user}`)
+        } else {
+            console.log(result.data.addUser.errors);
         }
     });
 
@@ -82,7 +97,7 @@ const myStepDefinitionsWrapper = function stepDefinition() {
         const query = `User (id: "${email}") { id }`;
 
         const result = await graphql(schema, query);
-        if (result.error && result.errors.length > 0) {
+        if (result.errors && result.errors.length > 0) {
             throw new Error(`Errors: ${result.errors}`);
         } else {
             console.log(result.data);
