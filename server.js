@@ -12,7 +12,7 @@ import authCheckMiddleware from './server/middlewares/auth-check'
 import adminCheckMiddleware from './server/middlewares/admin-check'
 import graphqlHTTP from 'express-graphql'
 
-import site from './server/api/sites'
+// import site from './server/api/sites'
 import users, { logIn, logOut } from './server/api/user'
 import * as uni from './server/app'
 import * as db from './server/api/service/db'
@@ -63,8 +63,7 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/graphql', graphqlHTTP({
-    site,
-    users,
+    schema: users,
     graphiql: true,
 }));
 

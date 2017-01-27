@@ -94,7 +94,7 @@ const myStepDefinitionsWrapper = function stepDefinition() {
     });
 
     this.Then(/^I can access new user by (.*)$/, async email => {
-        const query = `User (id: "${email}") { id }`;
+        const query = `query GetUser { user (id: "${email}") { id } }`;
 
         const result = await graphql(schema, query);
         if (result.errors && result.errors.length > 0) {
