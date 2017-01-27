@@ -1,24 +1,20 @@
-import r from 'rethinkdb'
+import rdash from 'rethinkdbdash'
 import config from 'config'
 
-function connect() {
-    return r.connect(config.get('rethinkdb'));
-}
+const r = rdash(config.get('rethinkdb'));
 
 // user CRU
 export async function getUser(userId) {
-    const connection = await connect();
     return await r
         .table('users')
-        .get(userId).run(connection);
+        .get(userId).run();
 }
 
 export async function saveUser(user) {
-    const connection = await connect();
     user.added = new Date();
     const qResult = await r
         .table('users')
-        .insert(user).run(connection);
+        .insert(user).run();
     if (!qResult.inserted) {
         throw new Error(`Errors ${qResult.errors}`)
     } else {
@@ -29,19 +25,17 @@ export async function saveUser(user) {
 // sites
 
 export async function getSite(siteId) {
-    const connection = await connect();
     return await r
         .table('sites')
-        .get(siteId).run(connection);
+        .get(siteId).run();
 }
 
 export async function saveSite(site) {
-    const connection = await connect();
     try {
         site.added = new Date();
         const result = await r
             .table('sites')
-            .insert(site).run(connection);
+            .insert(site).run();
         site.id = result.generated_keys[0];
         return site;
     } catch (e) {
