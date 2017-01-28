@@ -20,7 +20,10 @@ const SiteType = new GraphQLObjectType({
         },
         url: {
             type: GraphQLString
-        }
+        },
+        foo: {
+            type: GraphQLString
+        },
     })
 });
 
@@ -63,7 +66,8 @@ const MutationType = new GraphQLObjectType({
                 }
             },
             resolve: async(root, { destinations, url, name }) => {
-                const site = { destinations, url, name };
+                console.log(root);
+                const site = { destinations, url, name, foo: root.authorization };
                 return await db.saveSite(site)
             }
         }

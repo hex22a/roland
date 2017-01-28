@@ -12,7 +12,7 @@ import authCheckMiddleware from './server/middlewares/auth-check'
 import adminCheckMiddleware from './server/middlewares/admin-check'
 import graphqlHTTP from 'express-graphql'
 
-// import site from './server/api/sites'
+import site from './server/api/sites'
 import users, { logIn, logOut } from './server/api/user'
 import * as uni from './server/app'
 import * as db from './server/api/service/db'
@@ -62,10 +62,11 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/graphql', graphqlHTTP({
-    schema: users,
+app.use('/graphql', graphqlHTTP(request => ({
+    schema: site,
+    rootValue: request.headers,
     graphiql: true,
-}));
+})));
 
 app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'images', 'favicon.ico')));
