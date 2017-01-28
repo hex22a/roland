@@ -113,6 +113,7 @@
     "redux-logger": "^2.6.0",
     "redux-mock-store": "^1.2.1",
     "redux-thunk": "^2.1.0",
+    "request": "^2.79.0",
     "rethinkdb": "^2.2.2",
     "rethinkdbdash": "^2.3.27",
     "style-loader": "^0.13.0",
