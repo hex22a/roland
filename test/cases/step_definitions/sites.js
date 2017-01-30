@@ -1,35 +1,22 @@
 import { graphql } from 'graphql'
 import schema from '../../../server/api/sites'
-import request from 'request'
+import Browser from '../../utils/Browser'
 
 
 const myStepDefinitionsWrapper = function stepDefinition() {
     let site = null;
+    const browser = Browser.instance;
+
     this.When(/^User adds site with name: (.*), url: (.*), destinations: (.*)$/, async (name, url, rawDestinations) => {
         const destinations = rawDestinations.split(';');
 
-        const operationName = 'AddSite';
-        const query = `mutation ${operationName} { addSite(name: "${name}", destinations: ${JSON.stringify(destinations)} url: "${url}"){ id, name, destinations, url, foo } }`;
+        const query = `mutation AddSite { addSite(name: "${name}", destinations: ${JSON.stringify(destinations)}, url: "${url}", token: "${browser.getToken()}") {site {id, name, destinations, url, owners} errors } }`;
 
-        const payload = { operationName, query};
-        console.log(payload);
+        console.log(query);
 
-        await request({
-            method: 'post',
-            url: 'http://localhost:3000/graphql',
-            json: true,
-            headers: {
-                Authorization: 'fofofof'
-            },
-            body: payload
-        }, (error, response, body) => {
-            if (error) {
-                console.log(error);
-            } else {
-                console.log(response);
-                console.log(body);
-            }
-        })
+        const result = await graphql(schema, query);
+        site = result.data.addSite;
+        console.log(result);
     });
 
     this.Then(/^User can get new site as an object$/, async () => {

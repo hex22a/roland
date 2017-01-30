@@ -4,6 +4,8 @@
 
 import { GraphQLString, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLNonNull } from 'graphql'
 import * as db from './service/db'
+import jwt from 'jsonwebtoken'
+import config from 'config'
 
 const SiteType = new GraphQLObjectType({
     name: 'Site',
@@ -18,13 +20,21 @@ const SiteType = new GraphQLObjectType({
         destinations: {
             type: new GraphQLList(GraphQLString)
         },
+        owners: {
+            type: new GraphQLList(GraphQLString)
+        },
         url: {
             type: GraphQLString
-        },
-        foo: {
-            type: GraphQLString
-        },
+        }
     })
+});
+
+const AddSiteResult = new GraphQLObjectType({
+    name: 'AddSiteResult',
+    fields: {
+        errors: { type: new GraphQLNonNull(new GraphQLList(GraphQLString)) },
+        site: { type: SiteType },
+    }
 });
 
 const QueryType = new GraphQLObjectType({
@@ -50,7 +60,7 @@ const MutationType = new GraphQLObjectType({
     name: 'Mutation',
     fields: () => ({
         addSite: {
-            type: SiteType,
+            type: AddSiteResult,
             args: {
                 name: {
                     name: 'name',
@@ -63,12 +73,25 @@ const MutationType = new GraphQLObjectType({
                 url: {
                     name: 'url',
                     type: new GraphQLNonNull(GraphQLString)
+                },
+                token: {
+                    name: 'token',
+                    type: new GraphQLNonNull(GraphQLString)
                 }
             },
-            resolve: async(root, { destinations, url, name }) => {
-                console.log(root);
-                const site = { destinations, url, name, foo: root.authorization };
-                return await db.saveSite(site)
+            resolve: async (root, { destinations, url, name, token }) => {
+                const errors = [];
+                let result = null;
+
+                try {
+                    const decoded = jwt.verify(token, config.jwtSecret);
+                    const site = { destinations, url, name, owners: [decoded.id] };
+                    result = await db.saveSite(site);
+                } catch (decodingError) {
+                    errors.push(decodingError);
+                }
+
+                return { site: result, errors };
             }
         }
     })
