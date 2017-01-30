@@ -62,11 +62,10 @@ app.use(expressSession({
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use('/graphql', graphqlHTTP(request => ({
+app.use('/graphql', graphqlHTTP({
     schema: site,
-    rootValue: request.headers,
     graphiql: true,
-})));
+}));
 
 app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'images', 'favicon.ico')));

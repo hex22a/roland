@@ -18,8 +18,7 @@ export default function (config) {
                 console.log(user);
                 if (bcrypt.compareSync(password, user.password)) {
                     const payload = {
-                        sub: user.id,
-                        role: user.role
+                        id: user.id,
                     };
 
                     const token = jwt.sign(payload, config.jwtSecret);
