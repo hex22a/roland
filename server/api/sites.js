@@ -87,6 +87,13 @@ const MutationType = new GraphQLObjectType({
                     const decoded = jwt.verify(token, config.jwtSecret);
                     const site = { destinations, url, name, owners: [decoded.id] };
                     result = await db.saveSite(site);
+                    const user = await db.getUser(decoded.id);
+                    if (!{}.hasOwnProperty.call(user, 'sites')) {
+                        user.sites = [result.id];
+                    } else {
+                        user.sites.push(result.id);
+                    }
+                    await db.saveUser(user);
                 } catch (decodingError) {
                     errors.push(decodingError);
                 }
