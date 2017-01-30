@@ -15,8 +15,8 @@ const myStepDefinitionsWrapper = function stepDefinition() {
         console.log(query);
 
         const result = await graphql(schema, query);
-        site = result.data.addSite;
-        console.log(result);
+        site = result.data.addSite.site;
+        console.log(result.data.addSite);
     });
 
     this.Then(/^User can get new site as an object$/, async () => {
