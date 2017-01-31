@@ -1,0 +1,14 @@
+{
+  "rethinkdb": {
+    "db": "roland_test"
+  },
+  "express": {
+    "host": "localhost",
+    "port": 3001
+  },
+  "mail": {
+    "login": "your smtp login",
+    "password": "your smtp password",
+    "destination": "recipient address"
+  }
+}
