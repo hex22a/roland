@@ -7,10 +7,10 @@ const myStepDefinitionsWrapper = function stepDefinition() {
     let site = null;
     const browser = Browser.instance;
 
-    this.When(/^User adds site with name: (.*), url: (.*), destinations: (.*)$/, async (name, url, rawDestinations) => {
+    this.When(/^User adds site with name: (.*), url: (.*), destinations: (.*), SMTP login: (.*), SMTP Password: (.*)$/, async (name, url, rawDestinations, SMTPLogin, SMTPPassword) => {
         const destinations = rawDestinations.split(';');
 
-        const query = `mutation AddSite { addSite(name: "${name}", destinations: ${JSON.stringify(destinations)}, url: "${url}", token: "${browser.getToken()}") {site {id, name, destinations, url, owners} errors } }`;
+        const query = `mutation AddSite { addSite(name: "${name}", destinations: ${JSON.stringify(destinations)}, url: "${url}", token: "${browser.getToken()}", SMTPLogin: "${SMTPLogin}", SMTPPassword: "${SMTPPassword}") {site {id, name, destinations, url, owners, SMTPLogin} errors } }`;
 
         console.log(query);
 
