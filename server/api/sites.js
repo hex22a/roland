@@ -150,7 +150,7 @@ const MutationType = new GraphQLObjectType({
                 },
                 token: {
                     name: 'token',
-                    type: GraphQLString
+                    type: new GraphQLNonNull(GraphQLString)
                 },
                 SMTPLogin: {
                     name: 'SMTPLogin',
@@ -202,7 +202,39 @@ const MutationType = new GraphQLObjectType({
 
                 return { site: result, errors };
             }
+        },
+        removeSite: {
+            type: AddSiteResult,
+            args: {
+                id: {
+                    name: 'id',
+                    type: new GraphQLNonNull(GraphQLString)
+                },
+                token: {
+                    name: 'token',
+                    type: new GraphQLNonNull(GraphQLString)
+                }
+            },
+            resolve: async (root, { id, token }) => {
+                const errors = [];
+                let result = null;
+
+                try {
+                    jwt.verify(token, config.jwtSecret);
+                    const site = await db.getSite(id);
+                    if (!site) {
+                        errors.push(`Site with id ${id} not found!`)
+                    } else {
+                        result = site;
+                        await db.deleteSite(id);
+                    }
+                } catch (decodingError) {
+                    errors.push(decodingError);
+                }
+                return { site: result, errors };
+            }
         }
+
     })
 });
 

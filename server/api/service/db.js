@@ -49,3 +49,9 @@ export async function updateSite(site) {
         .update(site).run();
     return site;
 }
+
+export async function deleteSite(id) {
+    return await r
+        .table('sites')
+        .get(id).delete().run();
+}
