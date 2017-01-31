@@ -39,7 +39,13 @@ export async function saveSite(site) {
         site.id = result.generated_keys[0];
         return site;
     } catch (e) {
-        console.log(e);
         return site;
     }
+}
+
+export async function updateSite(site) {
+    await r
+        .table('sites')
+        .update(site).run();
+    return site;
 }

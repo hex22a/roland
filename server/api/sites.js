@@ -29,6 +29,9 @@ const SiteType = new GraphQLObjectType({
         },
         SMTPLogin: {
             type: GraphQLString
+        },
+        JWT: {
+            type: GraphQLString
         }
     })
 });
@@ -53,8 +56,10 @@ const QueryType = new GraphQLObjectType({
                 }
             },
             resolve: async (root, { id }) => {
-                console.log(root);
-                return await db.getSite(id);
+                const JWT = jwt.sign({ id }, config.jwtSecret);
+
+                const site = await db.getSite(id);
+                return { ...site, JWT }
             }
         }
     })
@@ -116,6 +121,84 @@ const MutationType = new GraphQLObjectType({
                 } catch (decodingError) {
                     errors.push(decodingError);
                 }
+
+                const JWT = jwt.sign({ id: result.id }, config.jwtSecret);
+
+                result = { ...result, JWT };
+
+                return { site: result, errors };
+            }
+        },
+        editSite: {
+            type: AddSiteResult,
+            args: {
+                id: {
+                    name: 'id',
+                    type: new GraphQLNonNull(GraphQLString)
+                },
+                name: {
+                    name: 'name',
+                    type: GraphQLString
+                },
+                destinations: {
+                    name: 'destinations',
+                    type: new GraphQLList(GraphQLString)
+                },
+                url: {
+                    name: 'url',
+                    type: GraphQLString
+                },
+                token: {
+                    name: 'token',
+                    type: GraphQLString
+                },
+                SMTPLogin: {
+                    name: 'SMTPLogin',
+                    type: GraphQLString
+                },
+                SMTPPassword: {
+                    name: 'SMTPPassword',
+                    type: GraphQLString
+                }
+            },
+            resolve: async (root, { id, destinations, url, name, token, SMTPLogin, SMTPPassword }) => {
+                const errors = [];
+                let result = null;
+
+                try {
+                    jwt.verify(token, config.jwtSecret);
+                    const site = await db.getSite(id);
+                    if (!site) {
+                        errors.push(`Site with id ${id} not found!`)
+                    } else {
+                        if (destinations) {
+                            site.destinations = destinations
+                        }
+                        if (url) {
+                            site.url = url;
+                        }
+                        if (name) {
+                            site.name = name;
+                        }
+
+                        if (SMTPPassword && SMTPPassword) {
+                            /** @namespace config.crypto */
+                            const cipher = crypto.createCipher(config.crypto.algorithm, config.crypto.password);
+                            let crypted = cipher.update(SMTPPassword, 'utf8', 'hex');
+                            crypted += cipher.final('hex');
+                            site.SMTPLogin = SMTPLogin;
+                            site.SMTPPassword = crypted;
+                        }
+
+                        result = await db.updateSite(site);
+                    }
+                } catch (decodingError) {
+                    errors.push(decodingError);
+                }
+
+                const JWT = jwt.sign({ id: result.id }, config.jwtSecret);
+
+                result = { ...result, JWT };
 
                 return { site: result, errors };
             }
