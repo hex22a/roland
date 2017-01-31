@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { getUser } from '../api/service/db';
+import { getSite } from '../api/service/db';
 
 export default function (config) {
     return (req, res, next) => {
@@ -14,11 +14,11 @@ export default function (config) {
             // the 401 code is for unauthorized status
             if (err) { return res.status(401).end(); }
 
-            const userId = decoded.id;
+            const siteId = decoded.id;
 
-            // check if a user exists
+            // check if site exists
             try {
-                await getUser(userId);
+                await getSite(siteId);
                 return next();
             } catch (e) {
                 return res.status(401).end();

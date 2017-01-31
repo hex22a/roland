@@ -14,3 +14,11 @@ Feature: Sites
       | admin@test.test | 123456   | site2    | http://test2.test | mail@test.test;mail2@test.test  | foo      | bar         |
       | admin@test.test | 123456   | site3    | http://test3.test | mail@test.test;mail2@test.test  | foo      | bar         |
       | admin@test.test | 123456   | site4    | http://test4.test | mail@test.test;mail2@test.test  | foo      | bar         |
+
+  Scenario: Editing site
+    When User edits site with name: fooName, url: newURL, destinations: mail6@test.test, SMTP login: foo2, SMTP Password: bar2
+    Then User can get new site as an object
+
+  Scenario: Removing site
+    When User removes site
+    Then Nobody can get site anymore

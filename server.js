@@ -10,6 +10,7 @@ import passport from 'passport';
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import authCheckMiddleware from './server/middlewares/auth-check'
 import adminCheckMiddleware from './server/middlewares/admin-check'
+import siteCheckMiddleware from './server/middlewares/site-auth-check'
 import graphqlHTTP from 'express-graphql'
 
 import site from './server/api/sites'
@@ -30,6 +31,7 @@ app.use(webpackDevMiddleware(webpack(webpackConfig), {
 }));
 app.use('/api', authCheckMiddleware(config));
 app.use('/api/admin', adminCheckMiddleware(config));
+app.use('/site/api', siteCheckMiddleware(config));
 
 strategies(config);
 

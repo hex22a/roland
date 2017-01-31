@@ -10,9 +10,7 @@ const myStepDefinitionsWrapper = function stepDefinition() {
     this.When(/^User adds site with name: (.*), url: (.*), destinations: (.*), SMTP login: (.*), SMTP Password: (.*)$/, async (name, url, rawDestinations, SMTPLogin, SMTPPassword) => {
         const destinations = rawDestinations.split(';');
 
-        const query = `mutation AddSite { addSite(name: "${name}", destinations: ${JSON.stringify(destinations)}, url: "${url}", token: "${browser.getToken()}", SMTPLogin: "${SMTPLogin}", SMTPPassword: "${SMTPPassword}") {site {id, name, destinations, url, owners, SMTPLogin} errors } }`;
-
-        console.log(query);
+        const query = `mutation AddSite { addSite(name: "${name}", destinations: ${JSON.stringify(destinations)}, url: "${url}", token: "${browser.getToken()}", SMTPLogin: "${SMTPLogin}", SMTPPassword: "${SMTPPassword}") {site {id, name, destinations, url, owners, SMTPLogin, JWT} errors } }`;
 
         const result = await graphql(schema, query);
         site = result.data.addSite.site;
@@ -23,6 +21,17 @@ const myStepDefinitionsWrapper = function stepDefinition() {
         if (!site || Object.keys(site).length === 0) {
             throw new Error('No site added!');
         }
+    });
+
+    this.When(/^User edits site with name: (.*), url: (.*), destinations: (.*), SMTP login: (.*), SMTP Password: (.*)$/, async (name, url, rawDestinations, SMTPLogin, SMTPPassword) => {
+        const destinations = rawDestinations.split(';');
+        const query = `mutation EditSite { editSite(id: "${site.id}", name: "${name}", destinations: ${JSON.stringify(destinations)}, url: "${url}", token: "${browser.getToken()}", SMTPLogin: "${SMTPLogin}", SMTPPassword: "${SMTPPassword}") {site {id, name, destinations, url, owners, SMTPLogin, JWT} errors } }`;
+
+        console.log(query);
+
+        const result = await graphql(schema, query);
+        site = result.data.editSite.site;
+        console.log(result.data.editSite);
     });
 };
 module.exports = myStepDefinitionsWrapper;
