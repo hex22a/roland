@@ -9,5 +9,9 @@
     "port": 3000
   },
   "buildDirectory": "build",
-  "jwtSecret": "GSdw54Pj5011"
+  "jwtSecret": "your JWT secret here",
+  "crypto": {
+    "algorithm": "aes-256-ctr",
+    "password": "your crypto password here"
+  }
 }

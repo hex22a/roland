@@ -6,6 +6,7 @@ import { GraphQLString, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLNo
 import * as db from './service/db'
 import jwt from 'jsonwebtoken'
 import config from 'config'
+import crypto from 'crypto'
 
 const SiteType = new GraphQLObjectType({
     name: 'Site',
@@ -24,6 +25,9 @@ const SiteType = new GraphQLObjectType({
             type: new GraphQLList(GraphQLString)
         },
         url: {
+            type: GraphQLString
+        },
+        SMTPLogin: {
             type: GraphQLString
         }
     })
@@ -77,15 +81,30 @@ const MutationType = new GraphQLObjectType({
                 token: {
                     name: 'token',
                     type: new GraphQLNonNull(GraphQLString)
+                },
+                SMTPLogin: {
+                    name: 'SMTPLogin',
+                    type: GraphQLString
+                },
+                SMTPPassword: {
+                    name: 'SMTPPassword',
+                    type: GraphQLString
                 }
             },
-            resolve: async (root, { destinations, url, name, token }) => {
+            resolve: async (root, { destinations, url, name, token, SMTPLogin, SMTPPassword }) => {
                 const errors = [];
                 let result = null;
 
                 try {
                     const decoded = jwt.verify(token, config.jwtSecret);
-                    const site = { destinations, url, name, owners: [decoded.id] };
+                    let site = { destinations, url, name, owners: [decoded.id] };
+                    if (SMTPPassword && SMTPPassword) {
+                        /** @namespace config.crypto */
+                        const cipher = crypto.createCipher(config.crypto.algorithm, config.crypto.password);
+                        let crypted = cipher.update(SMTPPassword, 'utf8', 'hex');
+                        crypted += cipher.final('hex');
+                        site = { ...site, SMTPLogin, SMTPPassword: crypted };
+                    }
                     result = await db.saveSite(site);
                     const user = await db.getUser(decoded.id);
                     if (!{}.hasOwnProperty.call(user, 'sites')) {
