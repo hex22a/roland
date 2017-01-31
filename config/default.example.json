@@ -13,5 +13,9 @@
   "crypto": {
     "algorithm": "aes-256-ctr",
     "password": "your crypto password here"
+  },
+  "mail": {
+    "server": "smtp.yandex.ru",
+    "port": 465
   }
 }

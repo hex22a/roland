@@ -7,8 +7,8 @@
     "port": 3001
   },
   "mail": {
-    "login": "robot@stdio.digital",
-    "password": "05MIano8rrIL",
-    "destination": "hex22a@gmail.com"
+    "login": "your smtp login",
+    "password": "your smtp password",
+    "destination": "recipient address"
   }
 }
