@@ -33,5 +33,26 @@ const myStepDefinitionsWrapper = function stepDefinition() {
         site = result.data.editSite.site;
         console.log(result.data.editSite);
     });
+
+    this.When(/^User removes site$/, async () => {
+        const query = `mutation RemoveSite { removeSite(id: "${site.id}", token: "${browser.getToken()}") {site {id, name, destinations, url, owners, SMTPLogin, JWT} errors } }`;
+
+        console.log(query);
+
+        const result = await graphql(schema, query);
+        site = result.data.removeSite.site;
+        console.log(result.data.removeSite);
+    });
+
+    this.Then(/^Nobody can get site anymore$/, async () => {
+        const query = `query GetSite { site (id: "${site.id}") { id } }`;
+
+        const result = await graphql(schema, query);
+        if (result.errors && result.errors.length > 0) {
+            throw new Error(`Errors: ${result.errors}`);
+        } else if (result.data.site.id !== null) {
+            throw new Error('Site still exists');
+        }
+    });
 };
 module.exports = myStepDefinitionsWrapper;
