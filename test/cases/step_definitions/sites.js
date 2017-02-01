@@ -14,6 +14,7 @@ const myStepDefinitionsWrapper = function stepDefinition() {
 
         const result = await graphql(schema, query);
         site = result.data.addSite.site;
+        browser.setSiteJWT(site.JWT);
         console.log(result.data.addSite);
     });
 
@@ -41,7 +42,6 @@ const myStepDefinitionsWrapper = function stepDefinition() {
 
         const result = await graphql(schema, query);
         site = result.data.removeSite.site;
-        console.log(result.data.removeSite);
     });
 
     this.Then(/^Nobody can get site anymore$/, async () => {

@@ -15,6 +15,7 @@ import graphqlHTTP from 'express-graphql'
 
 import site from './server/api/sites'
 import users, { logIn, logOut } from './server/api/user'
+import mail from './server/api/http'
 import * as uni from './server/app'
 import * as db from './server/api/service/db'
 import webpackConfig from './webpack.config'
@@ -72,7 +73,8 @@ app.use('/graphql', graphqlHTTP({
 app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'images', 'favicon.ico')));
 
-/* open api */
+/* site api */
+app.post('/site/api/v1/mail', mail);
 
 /* api */
 app.post('/openapi/v1/login', logIn);

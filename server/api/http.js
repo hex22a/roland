@@ -1,19 +1,37 @@
-import * as service from './service/db'
+import * as db from './service/db'
+import mail from './service/mail'
+import config from 'config'
+import crypto from 'crypto'
+import jwt from 'jsonwebtoken'
 
-export function addProject(req, res) {
-    service.addProject(req.body)
-        .then((project) => res.json(project))
-        .catch(err => {
-            res.status(400);
-            res.json({ error: err, project: req.body });
-        });
-}
+export default function (req, res) {
+    const { subject, text, html } = req.body;
+    const token = req.headers.authorization;
 
-export function listProjects(req, res) {
-    service.listProjects()
-        .then((project) => res.json(project))
-        .catch(err => {
-            res.status(400);
-            res.json({ error: err });
-        });
+    if (!text) {
+        res.status(400);
+        res.json({ err: 'No text in request body' })
+    }
+
+    jwt.verify(token, config.jwtSecret, async (err, decoded) => {
+        if (err) {
+            res.status(500);
+            res.json({ err })
+        } else {
+            const site = await db.getSite(decoded.id);
+
+            const decipher = crypto.createDecipher(config.crypto.algorithm, config.crypto.password);
+            let dec = decipher.update(site.SMTPPassword, 'hex', 'utf8');
+            dec += decipher.final('utf8');
+
+            mail(site.SMTPLogin, dec, site.destinations, text, html, subject).then(error => {
+                if (error) {
+                    res.status(500);
+                    res.json({ err: error })
+                } else {
+                    res.json({ foo: null });
+                }
+            });
+        }
+    })
 }
