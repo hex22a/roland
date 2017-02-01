@@ -1,35 +1,26 @@
 import XHR from 'xmlhttprequest'
 import config from 'config'
+import Browser from '../../utils/Browser'
 
 const XMLHttpRequest = XHR.XMLHttpRequest;
 
 const myStepDefinitionsWrapper = function stepDefinition() {
-    let error = true;
+    const browser = Browser.instance;
 
-    this.When(/^Гость отправляет POST запрос с полями Имя: (.*) e-mail: (.*) Тема: (.*) Сообщение: (.*)$/, (name, email, subject, message) => {
+    this.When(/^Site sends HTTP POST with JWT auth header, subject (.*) - op, text: (.*) and safe html code: (.*) - op$/, async (subject, text, html) => {
         const xhr = new XMLHttpRequest();
 
-        const help = JSON.stringify({ help: { email, name, subject, message } });
+        const mail = JSON.stringify({ subject, text, html });
 
         /** @namespace config.express */
-        xhr.open('POST', `http://${config.express.host}:${config.express.port}/openapi/v1/help`, false);
+        xhr.open('POST', `http://${config.express.host}:${config.express.port}/site/api/v1/mail`, false);
         xhr.setRequestHeader('Content-Type', 'application/json');
-        xhr.send(help);
+        xhr.setRequestHeader('Authorization', browser.getSiteJWT());
+        xhr.send(mail);
 
         if (xhr.status !== 200) {
             throw new Error(`[Bad response] Code: ${xhr.status} Res: ${xhr.responseText}`);
-        } else {
-            error = false;
         }
-    });
-
-    this.Then(/^Админсратор получает письмо$/, () => {
-        /** @namespace config.mail.destination */
-        console.log(`[CUCUMBER] Check mail ${config.mail.destination}`);
-    });
-
-    this.Then(/^Сервер отвечает HTTP статусом 200$/, () => {
-        if (error) throw new Error('Server fault');
     });
 };
 module.exports = myStepDefinitionsWrapper;

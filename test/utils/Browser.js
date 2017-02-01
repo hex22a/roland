@@ -7,13 +7,13 @@ const singleton = Symbol('singleton');
 const singletonEnforcer = Symbol('enforcer');
 
 const _token = Symbol('token');
-const _uuid = Symbol('uuid');
+const _siteJWT = Symbol('_siteJWT');
 
 export default class Browser {
     constructor(enforcer) {
         if (enforcer !== singletonEnforcer) throw new Error('Cannot construct singleton');
         this[_token] = null;
-        this[_uuid] = null;
+        this[_siteJWT] = null;
     }
 
     static get instance() {
@@ -31,11 +31,11 @@ export default class Browser {
         return this[_token];
     }
 
-    setId(id) {
-        this[_uuid] = id;
+    setSiteJWT(JWT) {
+        this[_siteJWT] = JWT;
     }
 
-    getId() {
-        return this[_uuid];
+    getSiteJWT() {
+        return this[_siteJWT];
     }
 }
