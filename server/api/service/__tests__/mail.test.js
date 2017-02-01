@@ -11,7 +11,18 @@ import config from 'config'
 describe('Mail sender unit testing', () => {
     // noinspection JSUnresolvedFunction
     const mailConf = config.get('mail');
-    it('Should return error===false for success send (promise)', () => mail(mailConf.login, mailConf.password, [mailConf.destination], 'hi there')
-        .then(error => expect(error).toBeFalsy())
-    );
+    it('Should success send mail', async () => {
+        try {
+            await mail(mailConf.login, mailConf.password, [mailConf.destination], 'hi there');
+        } catch (mailError) {
+            expect(mailError).toEqual('foo');
+        }
+    });
+    it('Should trow error for fail test', async () => {
+        try {
+            await mail('foo', 'foo', [mailConf.destination], 'hi there');
+        } catch (mailError) {
+            expect(mailError).not.toBeFalsy();
+        }
+    });
 });

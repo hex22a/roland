@@ -18,7 +18,7 @@ const myStepDefinitionsWrapper = function stepDefinition() {
         xhr.setRequestHeader('Authorization', browser.getSiteJWT());
         xhr.send(mail);
 
-        if (xhr.status !== 200) {
+        if (xhr.status !== 200 && xhr.status !== 502) {
             throw new Error(`[Bad response] Code: ${xhr.status} Res: ${xhr.responseText}`);
         }
     });

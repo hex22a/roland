@@ -4,7 +4,7 @@ import config from 'config'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
 
-export default function (req, res) {
+export default async function (req, res) {
     const { subject, text, html } = req.body;
     const token = req.headers.authorization;
 
@@ -24,14 +24,12 @@ export default function (req, res) {
             let dec = decipher.update(site.SMTPPassword, 'hex', 'utf8');
             dec += decipher.final('utf8');
 
-            mail(site.SMTPLogin, dec, site.destinations, text, html, subject).then(error => {
-                if (error) {
-                    res.status(500);
-                    res.json({ err: error })
-                } else {
-                    res.json({ foo: null });
-                }
-            });
+            try {
+                await mail(site.SMTPLogin, dec, site.destinations, text, html, subject);
+            } catch (error) {
+                res.status(502);
+                res.json({ err: error })
+            }
         }
     })
 }
