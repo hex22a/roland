@@ -4,3 +4,4 @@
 /yarn.lock
 /config/default.json
 /config/test.json
+/config/secrets

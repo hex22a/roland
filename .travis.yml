@@ -13,6 +13,5 @@ addons:
     - g++-4.8
 before_install:
 - openssl aes-256-cbc -K $encrypted_17894d9e3b36_key -iv $encrypted_17894d9e3b36_iv
-  -in config/default.json.enc -out config/default.json -d
-- openssl aes-256-cbc -K $encrypted_17894d9e3b36_key -iv $encrypted_17894d9e3b36_iv
-  -in config/test.json.enc -out config/test.json -d
+  -in config/secrets.enc -out config/secrets -d
+- tar xvf secrets
