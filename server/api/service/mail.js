@@ -12,7 +12,7 @@ let smtpConfig = {
     secure: true // use SSL
 };
 
-export default function (login, password, destinations, textMessage, htmlMessage, subject) {
+export default async function (login, password, destinations, textMessage, htmlMessage, subject) {
     smtpConfig = { ...smtpConfig, auth: { user: login, pass: password } };
 
     let html = htmlMessage;
@@ -34,20 +34,12 @@ export default function (login, password, destinations, textMessage, htmlMessage
         html
     };
 
-    return new Promise((resolve, reject) => {
-        const transporter = nodemailer.createTransport(smtpTransport(smtpConfig));
+    const transporter = nodemailer.createTransport(smtpTransport(smtpConfig));
 
-        return transporter.verify(error => {
-            if (error) {
-                reject(true);
-            }
-            transporter.sendMail(mailData, sendingError => {
-                if (sendingError) {
-                    reject(true);
-                }
-                resolve(false);
-            });
-            resolve(false);
-        });
+    await transporter.verify();
+    await transporter.sendMail(mailData, sendingError => {
+        if (sendingError) {
+            throw new Error(sendingError);
+        }
     });
 }
