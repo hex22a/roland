@@ -11,8 +11,3 @@ addons:
     packages:
     - gcc-4.8
     - g++-4.8
-before_install:
-- openssl aes-256-cbc -K $encrypted_d7758aef558b_key -iv $encrypted_d7758aef558b_iv
-  -in test.json.enc -out ./config/test.json -d
-- openssl aes-256-cbc -K $encrypted_d7758aef558b_key -iv $encrypted_d7758aef558b_iv
-  -in default.json.enc -out ./config/default.json -d
