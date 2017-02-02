@@ -1,5 +1,6 @@
 # Roland
 [![Build Status](https://travis-ci.org/hex22a/roland.svg?branch=master)](https://travis-ci.org/hex22a/roland)
+[![Coverage Status](https://coveralls.io/repos/github/hex22a/roland/badge.svg?branch=master)](https://coveralls.io/github/hex22a/roland?branch=master)
 
 **Roland** is a simple webapp to build and send e-mails. 
 
