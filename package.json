@@ -9,7 +9,7 @@
     "lint": "eslint client server front test server.js dbSetup.js",
     "start": "NODE_ENV=development node server.babel.js",
     "start:prod": "NODE_ENV=production node server.babel.js",
-    "test": "NODE_ENV=test jest",
+    "test": "NODE_ENV=test jest --coverage && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js",
     "test:cucumber": "NODE_ENV=test node dbSetup.babel.js && NODE_ENV=test forever start server.babel.js && sleep 10 && NODE_ENV=test ./node_modules/.bin/cucumber-js --compiler js:babel-core/register --compiler js:babel-polyfill ./test/cases ; forever stopall ; NODE_ENV=test node dbDrop.babel.js",
     "test:watch": "npm run test -- --watch"
   },
@@ -126,5 +126,8 @@
     "webpack-dev-server": "2.1.0-beta.10",
     "xmlhttprequest": "^1.8.0",
     "xss": "^0.2.10"
+  },
+  "devDependencies": {
+    "coveralls": "^2.11.15"
   }
 }
