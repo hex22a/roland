@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
 
 import './common/main.pcss'
 
@@ -8,7 +7,7 @@ import Container from '../components/Container/Container'
 import Menu from '../components/Menu/Menu'
 
 @ContainerWrapperHOC
-export class Main extends Component {
+export default class Main extends Component {
     render() {
         return (
             <Container>
@@ -18,5 +17,3 @@ export class Main extends Component {
         )
     }
 }
-
-export default connect(() => ({}))(Main)

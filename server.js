@@ -16,7 +16,7 @@ import graphqlHTTP from 'express-graphql'
 import site from './server/api/sites'
 import users, { logIn, logOut } from './server/api/user'
 import mail from './server/api/http'
-import * as uni from './server/app'
+import uni from './server/app'
 import * as db from './server/api/service/db'
 import webpackConfig from './webpack.config'
 
@@ -82,6 +82,6 @@ app.get('/logout', logOut);
 /* admin api */
 
 /* universal app endpoint */
-app.get('*', uni.handleRender);
+app.get('*', uni);
 
 httpServer.listen(port);

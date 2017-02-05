@@ -1,15 +1,11 @@
 import React, { Component, PropTypes } from 'react'
-import { connect } from 'react-redux'
-
-import { logout } from '../../actions/UserActions'
 
 import s from './menu.pcss'
 
 import { IndexLink, Link } from 'react-router'
 
-class Menu extends Component {
+export default class Menu extends Component {
     render() {
-        const { dispatch } = this.props;
         const { isAuthenticated } = this.context;
 
         return (
@@ -30,7 +26,7 @@ class Menu extends Component {
                     }
                     {isAuthenticated &&
                         <li className={ s.pullRight }>
-                            <button onClick={ () => { dispatch(logout()) } }>/logout</button>
+                            <button>/logout</button>
                         </li>
                     }
                 </ul>
@@ -42,5 +38,3 @@ class Menu extends Component {
 Menu.contextTypes = {
     isAuthenticated: PropTypes.bool
 };
-
-export default connect(() => ({}))(Menu)
