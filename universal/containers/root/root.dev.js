@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 import { Router } from 'react-router';
 
-
 export default class Root extends Component {
 	render() {
-		const { routing, history } = this.props;
+		const { routes, history, render, environment } = this.props;
 		return (
             <div>
-                <Router history={history}>
-                    {routing}
-                </Router>
+				<Router
+					history={history}
+					render={render}
+					routes={routes}
+					environment={environment}
+				/>
             </div>
 		);
 	}

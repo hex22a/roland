@@ -23,13 +23,7 @@ interface Node {
 }
 
 type Query {
-  sites: [Site]
-
-  # Fetches an object given its ID
-  node(
-    # The ID of an object
-    id: ID!
-  ): Node
+  viewer: Viewer
 }
 
 # A site object
@@ -47,4 +41,14 @@ type Site implements Node {
   url: String
   SMTPLogin: String
   JWT: String
+}
+
+type Viewer {
+  sites: [Site]
+
+  # Fetches an object given its ID
+  node(
+    # The ID of an object
+    id: ID!
+  ): Node
 }

@@ -1,14 +1,13 @@
-import React from 'react'/* global __DEV__:true */
-import { Route, IndexRoute } from 'react-router'
+import React from 'react'
+import { Route } from 'react-router'
+import Relay from 'react-relay';
 
 import MainContainer from './containers/Main'
-import SignUp from './containers/SignUp'
-import SignIn from './containers/SignIn'
+
+const MainQueries = {
+	sites: () => Relay.QL`query { sites { id, name } }`
+};
 
 export default (
-    <Route path='/'>
-        <IndexRoute component={ MainContainer } />
-        <Route path="sign-in" component={ SignIn } />
-        <Route path="sign-up" component={ SignUp } />
-    </Route>
+    <Route path='/' component={ MainContainer } queries={ MainQueries } />
 );

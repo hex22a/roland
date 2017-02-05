@@ -71,7 +71,6 @@ app.use('/graphql', graphqlHTTP({
 }));
 
 app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));
-app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'images', 'favicon.ico')));
 
 /* site api */
 app.post('/site/api/v1/mail', mail);
@@ -82,6 +81,8 @@ app.get('/logout', logOut);
 /* admin api */
 
 /* universal app endpoint */
-app.get('*', uni);
+app.get('*', (req, res, next) => {
+	uni(res, next);
+});
 
 httpServer.listen(port);

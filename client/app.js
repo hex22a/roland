@@ -1,12 +1,19 @@
-import ReactDOM from 'react-dom';
 import React from 'react';
-import { browserHistory } from 'react-router'
+import ReactDOM from 'react-dom';
+import Relay from 'react-relay';
+import IsomorphicRelay from 'isomorphic-relay';
+import rootContainerProps from '../universal/containers/root/props'
 
-import routes from '../universal/routes';
+const environment = new Relay.Environment();
 
-import Root from '../universal/containers/root';
+environment.injectNetworkLayer(new Relay.DefaultNetworkLayer('/graphql'));
 
-ReactDOM.render(
-  <Root routing={ routes } history={ browserHistory } />,
-  document.getElementById('app')
-);
+const data = JSON.parse(document.getElementById('preloadedData').textContent);
+
+const rootElement = document.getElementById('app');
+
+IsomorphicRelay.injectPreparedData(environment, data);
+
+IsomorphicRelay.prepareInitialRender({ ...rootContainerProps, environment }).then(props => {
+	ReactDOM.render(<IsomorphicRelay.Renderer {...props} />, rootElement);
+});

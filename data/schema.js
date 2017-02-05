@@ -167,12 +167,21 @@ const siteType = new GraphQLObjectType({
 const queryType = new GraphQLObjectType({
 	name: 'Query',
 	fields: () => ({
+		viewer: {
+			type: viewerType,
+		}
+	}),
+});
+
+const viewerType = new GraphQLObjectType({
+	name: 'Viewer',
+	fields: () => ({
 		sites: {
 			type: new GraphQLList(siteType),
 			resolve: async () => await listSites(),
 		},
-		node: nodeField,
-	}),
+		node: nodeField
+	})
 });
 
 /**
