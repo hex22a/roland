@@ -1,21 +1,46 @@
-type AddSiteResult {
-  errors: [String]!
-  site: Site
+input AddSiteInput {
+  name: String!
+  destinations: [String]
+  url: String!
+  SMTPLogin: String
+  SMTPPassword: String
+  clientMutationId: String
+}
+
+type AddSitePayload {
+  newSite: Site
+  clientMutationId: String
 }
 
 type Mutation {
-  addSite(name: String!, destinations: [String], url: String!, token: String!, SMTPLogin: String, SMTPPassword: String): AddSiteResult
-  editSite(id: String!, name: String, destinations: [String], url: String, token: String!, SMTPLogin: String, SMTPPassword: String): AddSiteResult
-  removeSite(id: String!, token: String!): AddSiteResult
+  addSite(input: AddSiteInput!): AddSitePayload
+}
+
+# An object with an ID
+interface Node {
+  # The id of the object.
+  id: ID!
 }
 
 type Query {
-  site(id: String!): Site
+  sites: [Site]
+
+  # Fetches an object given its ID
+  node(
+    # The ID of an object
+    id: ID!
+  ): Node
 }
 
 # A site object
-type Site {
-  id: String
+type Site implements Node {
+  # The ID of an object
+  id: ID!
+
+  # id of site in db
+  siteId: String
+
+  # Site name
   name: String
   destinations: [String]
   owners: [String]

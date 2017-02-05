@@ -55,3 +55,8 @@ export async function deleteSite(id) {
         .table('sites')
         .get(id).delete().run();
 }
+
+// TODO for one user
+export async function listSites() {
+	return await r.table('sites').run();
+}
