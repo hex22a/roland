@@ -27,8 +27,8 @@ const httpServer = http.createServer(app);
 const port = config.get('express.port') || 3000;
 
 app.use(webpackDevMiddleware(webpack(webpackConfig), {
-    publicPath: webpackConfig.output.publicPath,
-    stats: { colors: true },
+	publicPath: webpackConfig.output.publicPath,
+	stats: { colors: true },
 }));
 app.use('/api', authCheckMiddleware(config));
 app.use('/api/admin', adminCheckMiddleware(config));
@@ -37,16 +37,16 @@ app.use('/site/api', siteCheckMiddleware(config));
 strategies(config);
 
 passport.serializeUser((user, done) => {
-    done(null, user.id);
+	done(null, user.id);
 });
 
 passport.deserializeUser(async (id, done) => {
-    try {
-        const user = await db.getUser(id);
-        done(null, user);
-    } catch (e) {
-        done(null, null);
-    }
+	try {
+		const user = await db.getUser(id);
+		done(null, user);
+	} catch (e) {
+		done(null, null);
+	}
 });
 
 app.set('views', path.join(__dirname, 'server', 'view'));
@@ -54,20 +54,20 @@ app.set('view engine', 'pug');
 
 app.use('/public', express.static(path.join(__dirname, '/public')));
 app.use(bodyParser.urlencoded({
-    extended: true,
+	extended: true,
 }));
 app.use(bodyParser.json());
 app.use(expressSession({
-    secret: 'gorillaz',
-    resave: false,
-    saveUninitialized: false,
+	secret: 'gorillaz',
+	resave: false,
+	saveUninitialized: false,
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 app.use('/graphql', graphqlHTTP({
-    schema: site,
-    graphiql: true,
+	schema: site,
+	graphiql: true,
 }));
 
 app.get('/robots.txt', (req, res) => res.sendFile(path.join(__dirname, 'robots.txt')));

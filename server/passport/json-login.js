@@ -6,30 +6,30 @@ import jwt from 'jsonwebtoken';
 import { getUser } from '../api/service/db';
 
 export default function (config) {
-    const JsonStrategy = Json.Strategy;
+	const JsonStrategy = Json.Strategy;
 
-    return new JsonStrategy({
-        usernameProp: 'user.id',
-        passwordProp: 'user.password',
-    }, (username, password, done) => {
-        process.nextTick(async () => {
-            try {
-                const user = await getUser(username);
-                console.log(user);
-                if (bcrypt.compareSync(password, user.password)) {
-                    const payload = {
-                        id: user.id,
-                    };
+	return new JsonStrategy({
+		usernameProp: 'user.id',
+		passwordProp: 'user.password',
+	}, (username, password, done) => {
+		process.nextTick(async () => {
+			try {
+				const user = await getUser(username);
+				console.log(user);
+				if (bcrypt.compareSync(password, user.password)) {
+					const payload = {
+						id: user.id,
+					};
 
-                    const token = jwt.sign(payload, config.jwtSecret);
+					const token = jwt.sign(payload, config.jwtSecret);
 
-                    return done(null, token, user);
-                }
-                return done(null, null, false, { message: 'Invalid username or password...' });
-            } catch (error) {
-                console.log(error);
-                return done(error);
-            }
-        });
-    });
+					return done(null, token, user);
+				}
+				return done(null, null, false, { message: 'Invalid username or password...' });
+			} catch (error) {
+				console.log(error);
+				return done(error);
+			}
+		});
+	});
 }

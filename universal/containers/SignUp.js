@@ -7,12 +7,12 @@ import SignUpForm from '../components/SignUpForm/SignUpForm'
 
 @ContainerWrapperHOC
 export default class SignUp extends Component {
-    render() {
-        return (
+	render() {
+		return (
             <Container>
                 <Menu/>
                 <SignUpForm/>
             </Container>
-        )
-    }
+		)
+	}
 }

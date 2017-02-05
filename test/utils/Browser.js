@@ -10,32 +10,32 @@ const _token = Symbol('token');
 const _siteJWT = Symbol('_siteJWT');
 
 export default class Browser {
-    constructor(enforcer) {
-        if (enforcer !== singletonEnforcer) throw new Error('Cannot construct singleton');
-        this[_token] = null;
-        this[_siteJWT] = null;
-    }
+	constructor(enforcer) {
+		if (enforcer !== singletonEnforcer) throw new Error('Cannot construct singleton');
+		this[_token] = null;
+		this[_siteJWT] = null;
+	}
 
-    static get instance() {
-        if (!this[singleton]) {
-            this[singleton] = new Browser(singletonEnforcer);
-        }
-        return this[singleton];
-    }
+	static get instance() {
+		if (!this[singleton]) {
+			this[singleton] = new Browser(singletonEnforcer);
+		}
+		return this[singleton];
+	}
 
-    setToken(token) {
-        this[_token] = token;
-    }
+	setToken(token) {
+		this[_token] = token;
+	}
 
-    getToken() {
-        return this[_token];
-    }
+	getToken() {
+		return this[_token];
+	}
 
-    setSiteJWT(JWT) {
-        this[_siteJWT] = JWT;
-    }
+	setSiteJWT(JWT) {
+		this[_siteJWT] = JWT;
+	}
 
-    getSiteJWT() {
-        return this[_siteJWT];
-    }
+	getSiteJWT() {
+		return this[_siteJWT];
+	}
 }

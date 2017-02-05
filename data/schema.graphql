@@ -1,0 +1,25 @@
+type AddSiteResult {
+  errors: [String]!
+  site: Site
+}
+
+type Mutation {
+  addSite(name: String!, destinations: [String], url: String!, token: String!, SMTPLogin: String, SMTPPassword: String): AddSiteResult
+  editSite(id: String!, name: String, destinations: [String], url: String, token: String!, SMTPLogin: String, SMTPPassword: String): AddSiteResult
+  removeSite(id: String!, token: String!): AddSiteResult
+}
+
+type Query {
+  site(id: String!): Site
+}
+
+# A site object
+type Site {
+  id: String
+  name: String
+  destinations: [String]
+  owners: [String]
+  url: String
+  SMTPLogin: String
+  JWT: String
+}

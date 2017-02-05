@@ -5,10 +5,10 @@ import s from './menu.pcss'
 import { IndexLink, Link } from 'react-router'
 
 export default class Menu extends Component {
-    render() {
-        const { isAuthenticated } = this.context;
+	render() {
+		const { isAuthenticated } = this.context;
 
-        return (
+		return (
             <div className={ s.menu }>
                 <ul>
                     <li>
@@ -31,10 +31,10 @@ export default class Menu extends Component {
                     }
                 </ul>
             </div>
-        )
-    }
+		)
+	}
 }
 
 Menu.contextTypes = {
-    isAuthenticated: PropTypes.bool
+	isAuthenticated: PropTypes.bool
 };

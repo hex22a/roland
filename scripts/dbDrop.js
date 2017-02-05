@@ -6,16 +6,16 @@ const DATABASE = rethinkdb.db;
 
 r.connect(rethinkdb)
 .then(conn => {
-    console.log(' [-] Database Drop');
-    return dropTables(conn)
+	console.log(' [-] Database Drop');
+	return dropTables(conn)
     .then(() => closeConnection(conn));
 });
 
 function dropTables(conn) {
-    return r.dbDrop(DATABASE).run(conn);
+	return r.dbDrop(DATABASE).run(conn);
 }
 
 function closeConnection(conn) {
-    console.log(' [x] Close connection!');
-    return conn.close();
+	console.log(' [x] Close connection!');
+	return conn.close();
 }

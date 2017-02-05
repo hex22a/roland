@@ -8,12 +8,12 @@ import Menu from '../components/Menu/Menu'
 
 @ContainerWrapperHOC
 export default class Main extends Component {
-    render() {
-        return (
+	render() {
+		return (
             <Container>
                 <Menu/>
                 <div>Hello{!this.props.isAuthenticated && ', anonymous'}{this.props.isAuthenticated && `, ${this.props.role}`}!</div>
             </Container>
-        )
-    }
+		)
+	}
 }

@@ -7,12 +7,12 @@ import SignInForm from '../components/SignInForm/SignInForm'
 
 @ContainerWrapperHOC
 export default class SignIn extends Component {
-    render() {
-        return (
+	render() {
+		return (
             <Container>
                 <Menu/>
                 <SignInForm />
             </Container>
-        )
-    }
+		)
+	}
 }

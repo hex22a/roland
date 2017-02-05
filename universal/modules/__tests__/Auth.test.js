@@ -8,17 +8,17 @@ import config from 'config'
 import Auth from '../Auth'
 
 const PAYLOAD = {
-    uuid: 'jest@example.com',
-    role: 'user'
+	uuid: 'jest@example.com',
+	role: 'user'
 };
 const TOKEN = jwt.sign(PAYLOAD, config.jwtSecret);
 
 describe('Auth module', () => {
-    describe('getPayload', () => {
-        it('Should return payload object', () => {
-            const truePayload = Auth.getPayload(TOKEN);
-            delete truePayload.iat;
-            expect(truePayload).toEqual(PAYLOAD);
-        })
-    })
+	describe('getPayload', () => {
+		it('Should return payload object', () => {
+			const truePayload = Auth.getPayload(TOKEN);
+			delete truePayload.iat;
+			expect(truePayload).toEqual(PAYLOAD);
+		})
+	})
 });
