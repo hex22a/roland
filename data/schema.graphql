@@ -24,6 +24,12 @@ interface Node {
 
 type Query {
   viewer: Viewer
+
+  # Fetches an object given its ID
+  node(
+    # The ID of an object
+    id: ID!
+  ): Node
 }
 
 # A site object
@@ -43,12 +49,8 @@ type Site implements Node {
   JWT: String
 }
 
-type Viewer {
+type Viewer implements Node {
+  # The ID of an object
+  id: ID!
   sites: [Site]
-
-  # Fetches an object given its ID
-  node(
-    # The ID of an object
-    id: ID!
-  ): Node
 }

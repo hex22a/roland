@@ -105,10 +105,20 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 	const { type, id } = fromGlobalId(globalId);
 	if (type === 'Site') {
 		return await getSite(id);
+	} else if (type === 'Viewer') {
+		const sites = await listSites();
+		return { sites }
 	}
 	return null;
 },
-	() => siteType
+	obj => {
+		if ({}.hasOwnProperty.call(obj, 'sites')) {
+			return viewerType
+		} else if ({}.hasOwnProperty.call(obj, 'id')) {
+			return siteType;
+		}
+		return null;
+	}
 );
 
 /**
@@ -169,19 +179,25 @@ const queryType = new GraphQLObjectType({
 	fields: () => ({
 		viewer: {
 			type: viewerType,
-		}
+			resolve: async () => {
+				const sites = await listSites();
+				return { sites }
+			}
+		},
+		node: nodeField
 	}),
 });
 
 const viewerType = new GraphQLObjectType({
 	name: 'Viewer',
 	fields: () => ({
+		id: globalIdField('Viewer'),
 		sites: {
 			type: new GraphQLList(siteType),
 			resolve: async () => await listSites(),
-		},
-		node: nodeField
-	})
+		}
+	}),
+	interfaces: [nodeInterface]
 });
 
 /**
