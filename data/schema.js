@@ -151,7 +151,7 @@ const siteMutation = mutationWithClientMutationId({
 			type: new GraphQLNonNull(GraphQLString)
 		},
 		destinations: {
-			type: new GraphQLList(GraphQLString)
+			type: GraphQLString
 		},
 		url: {
 			type: new GraphQLNonNull(GraphQLString)
@@ -172,13 +172,13 @@ const siteMutation = mutationWithClientMutationId({
 					cursor: cursorForObjectInConnection(await listSites(), site),
 					node: site,
 				};
-			},
-			viewer: {
-				type: viewerType,
-				resolve: async () => {
-					const sites = await listSites();
-					return { sites }
-				}
+			}
+		},
+		viewer: {
+			type: viewerType,
+			resolve: async () => {
+				const sites = await listSites();
+				return { sites }
 			}
 		}
 	},

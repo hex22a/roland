@@ -6,9 +6,19 @@ import './common/main.pcss'
 import ContainerWrapperHOC from './ContainerWrapperHOC'
 import Container from '../components/Container/Container'
 import Menu from '../components/Menu/Menu'
+import AddSite from './AddSite'
+
+import AddSiteMutation from '../mutations/AddSiteMutation'
 
 @ContainerWrapperHOC
 class Main extends Component {
+	handleAddSite(site) {
+		const { name, url } = site;
+		this.props.relay.commitUpdate(
+			new AddSiteMutation({ name, url, viewer: this.props.viewer })
+		);
+	}
+
 	render() {
 		const { viewer } = this.props;
 		return (
@@ -16,8 +26,9 @@ class Main extends Component {
                 <Menu/>
                 <div>Hello{!this.props.isAuthenticated && ', anonymous'}{this.props.isAuthenticated && `, ${this.props.role}`}!</div>
 				{viewer.sites.edges.map((site, id) =>
-					<div key={id}>{site.node.name}</div>
+					<div key={id}>url: {site.node.url} - name: {site.node.name}</div>
 				)}
+				<AddSite onSave={::this.handleAddSite}/>
             </Container>
 		)
 	}
@@ -30,11 +41,12 @@ export default Relay.createContainer(Main, {
 				sites (first: 2147483647) {
 					edges {
 						node {
-							siteId,
-							name
+							name,
+							url
 						}
 					}
 				}
+				${AddSiteMutation.getFragment('viewer')}
 			}
 		`
 	}
