@@ -8,98 +8,20 @@ import {
 } from 'graphql';
 
 import {
-  cursorForObjectInConnection,
-  fromGlobalId,
-  globalIdField,
-  mutationWithClientMutationId,
-  nodeDefinitions,
+	connectionDefinitions,
+	connectionArgs,
+	connectionFromArray,
+	cursorForObjectInConnection,
+	fromGlobalId,
+	globalIdField,
+	mutationWithClientMutationId,
+	nodeDefinitions,
 } from 'graphql-relay';
 
 import config from 'config'
 import crypto from 'crypto'
 import { listSites, getSite, saveSite, deleteSite } from '../server/api/service/db'
 
-/**
- * This is a basic end-to-end test, designed to demonstrate the various
- * capabilities of a Relay-compliant GraphQL server.
- *
- * It is recommended that readers of this test be familiar with
- * the end-to-end test in GraphQL.js first, as this test skips
- * over the basics covered there in favor of illustrating the
- * key aspects of the Relay spec that this test is designed to illustrate.
- *
- * We will create a GraphQL schema that describes the major
- * factions and ships in the original Star Wars trilogy.
- *
- * NOTE: This may contain spoilers for the original Star
- * Wars trilogy.
- */
-
-/**
- * Using our shorthand to describe type systems,
- * the type system for our example will be the following:
- *
- * interface Node {
- *   id: ID!
- * }
- *
- * type Faction : Node {
- *   id: ID!
- *   name: String
- *   ships: ShipConnection
- * }
- *
- * type Ship : Node {
- *   id: ID!
- *   name: String
- * }
- *
- * type ShipConnection {
- *   edges: [ShipEdge]
- *   pageInfo: PageInfo!
- * }
- *
- * type ShipEdge {
- *   cursor: String!
- *   node: Ship
- * }
- *
- * type PageInfo {
- *   hasNextPage: Boolean!
- *   hasPreviousPage: Boolean!
- *   startCursor: String
- *   endCursor: String
- * }
- *
- * type Query {
- *   rebels: Faction
- *   empire: Faction
- *   node(id: ID!): Node
- * }
- *
- * input IntroduceShipInput {
- *   clientMutationId: string!
- *   shipName: string!
- *   factionId: ID!
- * }
- *
- * input IntroduceShipPayload {
- *   clientMutationId: string!
- *   ship: Ship
- *   faction: Faction
- * }
- *
- * type Mutation {
- *   introduceShip(input IntroduceShipInput!): IntroduceShipPayload
- * }
- */
-
-/**
- * We get the node interface and field from the Relay library.
- *
- * The first method defines the way we resolve an ID to its object.
- * The second defines the way we resolve a node object to its GraphQL type.
- */
 const { nodeInterface, nodeField } = nodeDefinitions(
   async globalId => {
 	const { type, id } = fromGlobalId(globalId);
@@ -121,15 +43,6 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 	}
 );
 
-/**
- * We define our basic ship type.
- *
- * This implements the following type system shorthand:
- *   type Ship : Node {
- *     id: String!
- *     name: String
- *   }
- */
 
 const siteType = new GraphQLObjectType({
 	name: 'Site',
@@ -143,27 +56,41 @@ const siteType = new GraphQLObjectType({
 		},
 		name: {
 			type: GraphQLString,
-			description: 'Site name'
+			description: 'Site name',
+			resolve: site => site.name,
 		},
 		destinations: {
-			type: new GraphQLList(GraphQLString)
+			type: new GraphQLList(GraphQLString),
+			resolve: site => site.destinations,
 		},
 		owners: {
-			type: new GraphQLList(GraphQLString)
+			type: new GraphQLList(GraphQLString),
+			resolve: site => site.owners,
 		},
 		url: {
-			type: GraphQLString
+			type: GraphQLString,
+			resolve: site => site.url,
 		},
 		SMTPLogin: {
-			type: GraphQLString
+			type: GraphQLString,
+			resolve: site => site.SMTPLogin,
 		},
 		JWT: {
-			type: GraphQLString
+			type: GraphQLString,
+			resolve: site => site.JWT,
 		}
 	}),
 	interfaces: [nodeInterface]
 });
 
+
+const {
+	connectionType: SitesConnection,
+	edgeType: SitesEdge,
+} = connectionDefinitions({
+	name: 'Site',
+	nodeType: siteType,
+});
 /**
  * This is the type that will be the root of our query,
  * and the entry point into our schema.
@@ -193,8 +120,9 @@ const viewerType = new GraphQLObjectType({
 	fields: () => ({
 		id: globalIdField('Viewer'),
 		sites: {
-			type: new GraphQLList(siteType),
-			resolve: async () => await listSites(),
+			type: SitesConnection,
+			args: connectionArgs,
+			resolve: async (obj, args) => connectionFromArray(await listSites(), args)
 		}
 	}),
 	interfaces: [nodeInterface]
@@ -236,8 +164,8 @@ const siteMutation = mutationWithClientMutationId({
 		}
 	},
 	outputFields: {
-		newSite: {
-			type: siteType,
+		siteEdge: {
+			type: SitesEdge,
 			resolve: async payload => {
 				const site = getSite(payload.siteId);
 				return {
@@ -245,6 +173,13 @@ const siteMutation = mutationWithClientMutationId({
 					node: site,
 				};
 			},
+			viewer: {
+				type: viewerType,
+				resolve: async () => {
+					const sites = await listSites();
+					return { sites }
+				}
+			}
 		}
 	},
 	mutateAndGetPayload: async ({ destinations, url, name, SMTPLogin, SMTPPassword }) => {
@@ -283,7 +218,7 @@ const DeleteSiteMutation = mutationWithClientMutationId({
 				const sites = await listSites();
 				return { sites }
 			}
-		},
+		}
 	},
 	mutateAndGetPayload: async ({ id }) => {
 		const siteId = fromGlobalId(id).id;
