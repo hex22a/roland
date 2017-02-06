@@ -11,7 +11,7 @@ import {
 	connectionDefinitions,
 	connectionArgs,
 	connectionFromArray,
-	cursorForObjectInConnection,
+	offsetToCursor,
 	fromGlobalId,
 	globalIdField,
 	mutationWithClientMutationId,
@@ -20,6 +20,7 @@ import {
 
 import config from 'config'
 import crypto from 'crypto'
+import _ from 'lodash/core'
 import { listSites, getSite, saveSite, deleteSite } from '../server/api/service/db'
 
 const { nodeInterface, nodeField } = nodeDefinitions(
@@ -167,9 +168,15 @@ const siteMutation = mutationWithClientMutationId({
 		siteEdge: {
 			type: SitesEdge,
 			resolve: async payload => {
-				const site = getSite(payload.siteId);
+				const site = await getSite(payload.siteId);
+				const sites = await listSites();
+				const offset = _.indexOf(sites, site);
+				let cursor = null;
+				if (offset === -1) {
+					cursor = offsetToCursor(offset)
+				}
 				return {
-					cursor: cursorForObjectInConnection(await listSites(), site),
+					cursor,
 					node: site,
 				};
 			}
