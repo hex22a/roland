@@ -1,3 +1,8 @@
+schema {
+  query: Root
+  mutation: Mutation
+}
+
 input AddSiteInput {
   name: String!
   destinations: [String]
@@ -12,8 +17,20 @@ type AddSitePayload {
   clientMutationId: String
 }
 
+input DeleteSiteInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type DeleteSitePayload {
+  deletedId: ID
+  viewer: Viewer
+  clientMutationId: String
+}
+
 type Mutation {
   addSite(input: AddSiteInput!): AddSitePayload
+  deleteSite(input: DeleteSiteInput!): DeleteSitePayload
 }
 
 # An object with an ID
@@ -22,7 +39,7 @@ interface Node {
   id: ID!
 }
 
-type Query {
+type Root {
   viewer: Viewer
 
   # Fetches an object given its ID

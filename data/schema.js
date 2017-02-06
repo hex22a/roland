@@ -17,7 +17,7 @@ import {
 
 import config from 'config'
 import crypto from 'crypto'
-import { listSites, getSite, saveSite } from '../server/api/service/db'
+import { listSites, getSite, saveSite, deleteSite } from '../server/api/service/db'
 
 /**
  * This is a basic end-to-end test, designed to demonstrate the various
@@ -174,8 +174,8 @@ const siteType = new GraphQLObjectType({
  *     node(id: ID!): Node
  *   }
  */
-const queryType = new GraphQLObjectType({
-	name: 'Query',
+const Root = new GraphQLObjectType({
+	name: 'Root',
 	fields: () => ({
 		viewer: {
 			type: viewerType,
@@ -266,6 +266,32 @@ const siteMutation = mutationWithClientMutationId({
 	},
 });
 
+
+const DeleteSiteMutation = mutationWithClientMutationId({
+	name: 'DeleteSite',
+	inputFields: {
+		id: { type: new GraphQLNonNull(GraphQLID) },
+	},
+	outputFields: {
+		deletedId: {
+			type: GraphQLID,
+			resolve: ({ id }) => id,
+		},
+		viewer: {
+			type: viewerType,
+			resolve: async () => {
+				const sites = await listSites();
+				return { sites }
+			}
+		},
+	},
+	mutateAndGetPayload: async ({ id }) => {
+		const siteId = fromGlobalId(id).id;
+		await deleteSite(siteId);
+		return { id };
+	},
+});
+
 /**
  * This is the type that will be the root of our mutations,
  * and the entry point into performing writes in our schema.
@@ -279,6 +305,7 @@ const mutationType = new GraphQLObjectType({
 	name: 'Mutation',
 	fields: () => ({
 		addSite: siteMutation,
+		deleteSite: DeleteSiteMutation,
 	}),
 });
 
@@ -287,6 +314,6 @@ const mutationType = new GraphQLObjectType({
  * type we defined above) and export it.
  */
 export default new GraphQLSchema({
-	query: queryType,
+	query: Root,
 	mutation: mutationType,
 });

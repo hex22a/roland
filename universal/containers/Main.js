@@ -15,8 +15,8 @@ class Main extends Component {
             <Container>
                 <Menu/>
                 <div>Hello{!this.props.isAuthenticated && ', anonymous'}{this.props.isAuthenticated && `, ${this.props.role}`}!</div>
-				{viewer.sites.map(site =>
-					<div>{site.name}</div>
+				{viewer.sites.map((site, id) =>
+					<div key={id}>{site.name}</div>
 				)}
             </Container>
 		)

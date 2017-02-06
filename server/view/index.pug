@@ -35,5 +35,8 @@ html
         link(rel='stylesheet', href='/public/client.css')
     body
         #app
+            reactOutput
+        script(id='preloadedData', type='text/javascript').
+            !{JSON.stringify(preloadedData).replace(/\//g, '\\/')}
         script(type='text/javascript', src='/public/commons.js')
         script(type='text/javascript', src='/public/client.js')
