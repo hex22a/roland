@@ -9,13 +9,23 @@ import Menu from '../components/Menu/Menu'
 import AddSite from './AddSite'
 
 import AddSiteMutation from '../mutations/AddSiteMutation'
+import RemoveSiteMutation from '../mutations/RemoveSiteMutation'
 
 @ContainerWrapperHOC
 class Main extends Component {
 	handleAddSite(site) {
 		const { name, url } = site;
-		this.props.relay.commitUpdate(
-			new AddSiteMutation({ name, url, viewer: this.props.viewer })
+		const { relay, viewer } = this.props;
+		relay.commitUpdate(
+			new AddSiteMutation({ name, url, viewer })
+		);
+	}
+
+	handleRemoveSite(id) {
+		const { relay, viewer } = this.props;
+		console.log(viewer);
+		relay.commitUpdate(
+			new RemoveSiteMutation({ id, viewer })
 		);
 	}
 
@@ -26,7 +36,10 @@ class Main extends Component {
                 <Menu/>
                 <div>Hello{!this.props.isAuthenticated && ', anonymous'}{this.props.isAuthenticated && `, ${this.props.role}`}!</div>
 				{viewer.sites.edges.map((site, id) =>
-					<div key={id}>url: {site.node.url} - name: {site.node.name}</div>
+					<div key={id}>
+						url: {site.node.url} - name: {site.node.name}
+						<span onClick={() => this.handleRemoveSite(site.node.id)}>DELETE</span>
+					</div>
 				)}
 				<AddSite onSave={::this.handleAddSite}/>
             </Container>
@@ -41,12 +54,14 @@ export default Relay.createContainer(Main, {
 				sites (first: 2147483647) {
 					edges {
 						node {
+							id,
 							name,
 							url
 						}
 					}
 				}
 				${AddSiteMutation.getFragment('viewer')}
+				${RemoveSiteMutation.getFragment('viewer')}
 			}
 		`
 	}

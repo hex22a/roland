@@ -1,24 +1,23 @@
 /**
  * Crafted by x22a on 06.02.17.
  */
-
 import Relay from 'react-relay';
 
-export default class AddSiteMutation extends Relay.Mutation {
+export default class RemoveSiteMutation extends Relay.Mutation {
 	static fragments = {
 		viewer: () => Relay.QL`
 			fragment on Viewer {
 				id
 			}
-        `
+		`
 	};
 	getMutation() {
-		return Relay.QL`mutation{ addSite }`;
+		return Relay.QL`mutation{ removeSite }`;
 	}
 	getFatQuery() {
 		return Relay.QL`
-			fragment on AddSitePayload {
-				siteEdge,
+			fragment on RemoveSitePayload {
+				deletedId,
 				viewer {
 					sites
 				}
@@ -27,33 +26,22 @@ export default class AddSiteMutation extends Relay.Mutation {
 	}
 	getConfigs() {
 		return [{
-			type: 'RANGE_ADD',
+			type: 'NODE_DELETE',
 			parentName: 'viewer',
 			parentID: this.props.viewer.id,
 			connectionName: 'sites',
-			edgeName: 'siteEdge',
-			rangeBehaviors: {
-				'': 'append'
-			},
+			deletedIDFieldName: 'deletedId',
 		}];
 	}
 	getVariables() {
 		return {
-			name: this.props.name,
-			url: this.props.url
+			id: this.props.id
 		};
 	}
 	getOptimisticResponse() {
 		return {
-			siteEdge: {
-				node: {
-					name: this.props.name,
-					url: this.props.url
-				},
-			},
-			viewer: {
-				id: this.props.viewer.id,
-			},
+			deletedId: this.props.id,
+			viewer: this.props.viewer,
 		};
 	}
 }

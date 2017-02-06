@@ -530,7 +530,7 @@
               "deprecationReason": null
             },
             {
-              "name": "deleteSite",
+              "name": "removeSite",
               "description": null,
               "args": [
                 {
@@ -541,7 +541,7 @@
                     "name": null,
                     "ofType": {
                       "kind": "INPUT_OBJECT",
-                      "name": "DeleteSiteInput",
+                      "name": "RemoveSiteInput",
                       "ofType": null
                     }
                   },
@@ -550,7 +550,7 @@
               ],
               "type": {
                 "kind": "OBJECT",
-                "name": "DeleteSitePayload",
+                "name": "RemoveSitePayload",
                 "ofType": null
               },
               "isDeprecated": false,
@@ -690,7 +690,7 @@
         },
         {
           "kind": "INPUT_OBJECT",
-          "name": "DeleteSiteInput",
+          "name": "RemoveSiteInput",
           "description": null,
           "fields": null,
           "inputFields": [
@@ -725,7 +725,7 @@
         },
         {
           "kind": "OBJECT",
-          "name": "DeleteSitePayload",
+          "name": "RemoveSitePayload",
           "description": null,
           "fields": [
             {

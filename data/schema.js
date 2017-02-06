@@ -209,8 +209,8 @@ const siteMutation = mutationWithClientMutationId({
 });
 
 
-const DeleteSiteMutation = mutationWithClientMutationId({
-	name: 'DeleteSite',
+const RemoveSiteMutation = mutationWithClientMutationId({
+	name: 'RemoveSite',
 	inputFields: {
 		id: { type: new GraphQLNonNull(GraphQLID) },
 	},
@@ -247,7 +247,7 @@ const mutationType = new GraphQLObjectType({
 	name: 'Mutation',
 	fields: () => ({
 		addSite: siteMutation,
-		deleteSite: DeleteSiteMutation,
+		removeSite: RemoveSiteMutation,
 	}),
 });
 

@@ -18,20 +18,9 @@ type AddSitePayload {
   clientMutationId: String
 }
 
-input DeleteSiteInput {
-  id: ID!
-  clientMutationId: String
-}
-
-type DeleteSitePayload {
-  deletedId: ID
-  viewer: Viewer
-  clientMutationId: String
-}
-
 type Mutation {
   addSite(input: AddSiteInput!): AddSitePayload
-  deleteSite(input: DeleteSiteInput!): DeleteSitePayload
+  removeSite(input: RemoveSiteInput!): RemoveSitePayload
 }
 
 # An object with an ID
@@ -53,6 +42,17 @@ type PageInfo {
 
   # When paginating forwards, the cursor to continue.
   endCursor: String
+}
+
+input RemoveSiteInput {
+  id: ID!
+  clientMutationId: String
+}
+
+type RemoveSitePayload {
+  deletedId: ID
+  viewer: Viewer
+  clientMutationId: String
 }
 
 type Root {
