@@ -81,8 +81,6 @@ app.get('/logout', logOut);
 /* admin api */
 
 /* universal app endpoint */
-app.get('*', (req, res, next) => {
-	uni(res, next);
-});
+app.get('*', uni);
 
 httpServer.listen(port);

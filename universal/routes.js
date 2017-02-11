@@ -1,13 +1,19 @@
-import React from 'react'
-import { Route } from 'react-router'
-import Relay from 'react-relay';
+import MainContainer from './containers/Main';
+import SignUp from './containers/SignUp'
 
-import MainContainer from './containers/Main'
+import ViewerQueries from './queries/ViewerQueries';
 
-const MainQueries = {
-	sites: () => Relay.QL`query { sites { id, name } }`
-};
-
-export default (
-    <Route path='/' component={ MainContainer } queries={ MainQueries } />
-);
+export default [
+	{
+		path: '/',
+		component: MainContainer,
+		queries: ViewerQueries,
+		childRoutes: [
+			{
+				path: 'sign-up',
+				component: SignUp,
+				queries: ViewerQueries,
+			},
+		],
+	},
+];
