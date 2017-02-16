@@ -1,6 +1,5 @@
 import {
   GraphQLID,
-  GraphQLList,
   GraphQLNonNull,
   GraphQLObjectType,
   GraphQLSchema,
@@ -8,14 +7,9 @@ import {
 } from 'graphql';
 
 import {
-	connectionDefinitions,
-	connectionArgs,
-	connectionFromArray,
 	offsetToCursor,
 	fromGlobalId,
-	globalIdField,
 	mutationWithClientMutationId,
-	nodeDefinitions,
 } from 'graphql-relay';
 
 import config from 'config'
@@ -23,75 +17,13 @@ import crypto from 'crypto'
 import _ from 'lodash/core'
 import { listSites, getSite, saveSite, deleteSite } from '../server/api/service/db'
 
-const { nodeInterface, nodeField } = nodeDefinitions(
-  async globalId => {
-	const { type, id } = fromGlobalId(globalId);
-	if (type === 'Site') {
-		return await getSite(id);
-	} else if (type === 'Viewer') {
-		const sites = await listSites();
-		return { sites }
-	}
-	return null;
-},
-	obj => {
-		if ({}.hasOwnProperty.call(obj, 'sites')) {
-			return viewerType
-		} else if ({}.hasOwnProperty.call(obj, 'id')) {
-			return siteType;
-		}
-		return null;
-	}
-);
+import viewerType from './queries/Viewer'
+import { SitesEdge } from './queries/connections'
 
+import nodeDefinitions from './queries/nodeDefinitions'
 
-const siteType = new GraphQLObjectType({
-	name: 'Site',
-	description: 'A site object',
-	fields: () => ({
-		id: globalIdField('Site'),
-		siteId: {
-			type: GraphQLString,
-			description: 'id of site in db',
-			resolve: site => site.id,
-		},
-		name: {
-			type: GraphQLString,
-			description: 'Site name',
-			resolve: site => site.name,
-		},
-		destinations: {
-			type: new GraphQLList(GraphQLString),
-			resolve: site => site.destinations,
-		},
-		owners: {
-			type: new GraphQLList(GraphQLString),
-			resolve: site => site.owners,
-		},
-		url: {
-			type: GraphQLString,
-			resolve: site => site.url,
-		},
-		SMTPLogin: {
-			type: GraphQLString,
-			resolve: site => site.SMTPLogin,
-		},
-		JWT: {
-			type: GraphQLString,
-			resolve: site => site.JWT,
-		}
-	}),
-	interfaces: [nodeInterface]
-});
+const { nodeField } = nodeDefinitions;
 
-
-const {
-	connectionType: SitesConnection,
-	edgeType: SitesEdge,
-} = connectionDefinitions({
-	name: 'Site',
-	nodeType: siteType,
-});
 /**
  * This is the type that will be the root of our query,
  * and the entry point into our schema.
@@ -114,19 +46,6 @@ const Root = new GraphQLObjectType({
 		},
 		node: nodeField
 	}),
-});
-
-const viewerType = new GraphQLObjectType({
-	name: 'Viewer',
-	fields: () => ({
-		id: globalIdField('Viewer'),
-		sites: {
-			type: SitesConnection,
-			args: connectionArgs,
-			resolve: async (obj, args) => connectionFromArray(await listSites(), args)
-		}
-	}),
-	interfaces: [nodeInterface]
 });
 
 /**
