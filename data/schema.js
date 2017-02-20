@@ -36,16 +36,65 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 },
 	obj => {
 		if ({}.hasOwnProperty.call(obj, 'sites')) {
-			return viewerType
+			return ViewerType
 		} else if ({}.hasOwnProperty.call(obj, 'id')) {
-			return siteType;
+			return SiteType;
 		}
 		return null;
 	}
 );
 
+/**
+ * This is the type that will be the root of our query,
+ * and the entry point into our schema.
+ *
+ * This implements the following type system shorthand:
+ *   type Query {
+ *     factions(names: [FactionName]): [Faction]
+ *     node(id: ID!): Node
+ *   }
+ */
+const Root = new GraphQLObjectType({
+	name: 'Root',
+	fields: () => ({
+		viewer: {
+			type: ViewerType,
+			args: {
+				jwt: {
+					type: GraphQLString,
+					description: 'pass jwt if exists'
+				}
+			},
+			resolve: (root, { jwt }) => {
+				if (jwt) {
+					return { id: jwt }
+				}
+				return { id: 'foo@test.test' }
+			}
+		},
+		node: nodeField
+	}),
+});
 
-const siteType = new GraphQLObjectType({
+const ViewerType = new GraphQLObjectType({
+	name: 'Viewer',
+	fields: () => ({
+		id: globalIdField('Viewer'),
+		login: {
+			description: 'User login (if presented)',
+			type: GraphQLString,
+			resolve: viewer => viewer.id
+		},
+		sites: {
+			type: SitesConnection,
+			args: connectionArgs,
+			resolve: async (obj, args) => connectionFromArray(await listSites(), args)
+		}
+	}),
+	interfaces: [nodeInterface]
+});
+
+const SiteType = new GraphQLObjectType({
 	name: 'Site',
 	description: 'A site object',
 	fields: () => ({
@@ -90,43 +139,7 @@ const {
 	edgeType: SitesEdge,
 } = connectionDefinitions({
 	name: 'Site',
-	nodeType: siteType,
-});
-/**
- * This is the type that will be the root of our query,
- * and the entry point into our schema.
- *
- * This implements the following type system shorthand:
- *   type Query {
- *     factions(names: [FactionName]): [Faction]
- *     node(id: ID!): Node
- *   }
- */
-const Root = new GraphQLObjectType({
-	name: 'Root',
-	fields: () => ({
-		viewer: {
-			type: viewerType,
-			resolve: async () => {
-				const sites = await listSites();
-				return { sites }
-			}
-		},
-		node: nodeField
-	}),
-});
-
-const viewerType = new GraphQLObjectType({
-	name: 'Viewer',
-	fields: () => ({
-		id: globalIdField('Viewer'),
-		sites: {
-			type: SitesConnection,
-			args: connectionArgs,
-			resolve: async (obj, args) => connectionFromArray(await listSites(), args)
-		}
-	}),
-	interfaces: [nodeInterface]
+	nodeType: SiteType,
 });
 
 /**
@@ -145,7 +158,7 @@ const viewerType = new GraphQLObjectType({
  *     faction: Faction
  *   }
  */
-const siteMutation = mutationWithClientMutationId({
+const AddSiteMutation = mutationWithClientMutationId({
 	name: 'AddSite',
 	inputFields: {
 		name: {
@@ -182,7 +195,7 @@ const siteMutation = mutationWithClientMutationId({
 			}
 		},
 		viewer: {
-			type: viewerType,
+			type: ViewerType,
 			resolve: async () => {
 				const sites = await listSites();
 				return { sites }
@@ -220,7 +233,7 @@ const RemoveSiteMutation = mutationWithClientMutationId({
 			resolve: ({ id }) => id,
 		},
 		viewer: {
-			type: viewerType,
+			type: ViewerType,
 			resolve: async () => {
 				const sites = await listSites();
 				return { sites }
@@ -246,7 +259,7 @@ const RemoveSiteMutation = mutationWithClientMutationId({
 const mutationType = new GraphQLObjectType({
 	name: 'Mutation',
 	fields: () => ({
-		addSite: siteMutation,
+		addSite: AddSiteMutation,
 		removeSite: RemoveSiteMutation,
 	}),
 });
