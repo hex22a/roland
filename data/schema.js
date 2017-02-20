@@ -10,6 +10,8 @@ import {
 	offsetToCursor,
 	fromGlobalId,
 	mutationWithClientMutationId,
+	nodeDefinitions,
+	connectionDefinitions
 } from 'graphql-relay';
 
 import config from 'config'
@@ -17,12 +19,32 @@ import crypto from 'crypto'
 import _ from 'lodash/core'
 import { listSites, getSite, saveSite, deleteSite } from '../server/api/service/db'
 
-import viewerType from './queries/Viewer'
-import { SitesEdge } from './queries/connections'
+import viewerFactory from './queries/Viewer'
+import siteFactory from './queries/Site'
 
-import nodeDefinitions from './queries/nodeDefinitions'
+const viewerType = viewerFactory(nodeInterface, SitesConnection);
+const siteType = siteFactory(nodeInterface)
 
-const { nodeField } = nodeDefinitions;
+const { nodeInterface, nodeField } = nodeDefinitions(
+  async globalId => {
+	const { type, id } = fromGlobalId(globalId);
+	if (type === 'Site') {
+		return await getSite(id);
+	} else if (type === 'Viewer') {
+		const sites = await listSites();
+		return { sites }
+	}
+	return null;
+},
+	obj => {
+		if ({}.hasOwnProperty.call(obj, 'sites')) {
+			return viewerType
+		} else if ({}.hasOwnProperty.call(obj, 'id')) {
+			return siteType;
+		}
+		return null;
+	}
+);
 
 /**
  * This is the type that will be the root of our query,
@@ -48,6 +70,14 @@ const Root = new GraphQLObjectType({
 	}),
 });
 
+
+export const {
+	connectionType: SitesConnection,
+	edgeType: SitesEdge,
+} = connectionDefinitions({
+	name: 'Site',
+	nodeType: siteType,
+});
 /**
  * This will return a GraphQLFieldConfig for our ship mutation.
  *

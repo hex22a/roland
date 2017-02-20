@@ -10,12 +10,7 @@ import {
 
 import { listSites } from '../../server/api/service/db'
 
-import nodeDefinitions from './nodeDefinitions'
-import { SitesConnection } from './connections'
-
-const { nodeInterface } = nodeDefinitions;
-
-export default new GraphQLObjectType({
+const viewerFactory = (nodeInterface, SitesConnection) => new GraphQLObjectType({
 	name: 'Viewer',
 	fields: () => ({
 		id: globalIdField('Viewer'),
@@ -27,3 +22,5 @@ export default new GraphQLObjectType({
 	}),
 	interfaces: [nodeInterface]
 });
+
+export default viewerFactory
