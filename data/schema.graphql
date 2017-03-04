@@ -56,7 +56,10 @@ type RemoveSitePayload {
 }
 
 type Root {
-  viewer: Viewer
+  viewer(
+    # pass jwt if exists
+    jwt: String
+  ): Viewer
 
   # Fetches an object given its ID
   node(
@@ -103,5 +106,8 @@ type SiteEdge {
 type Viewer implements Node {
   # The ID of an object
   id: ID!
+
+  # User login (if presented)
+  login: String
   sites(after: String, first: Int, before: String, last: Int): SiteConnection
 }

@@ -34,7 +34,7 @@ class Main extends Component {
 		return (
             <Container>
                 <Menu/>
-                <div>Hello{!this.props.isAuthenticated && ', anonymous'}{this.props.isAuthenticated && `, ${this.props.role}`}!</div>
+                <div>Hello {viewer.login}!</div>
 				{viewer.sites.edges.map((site, id) =>
 					<div key={id}>
 						url: {site.node.url} - name: {site.node.name}
@@ -51,6 +51,7 @@ export default Relay.createContainer(Main, {
 	fragments: {
 		viewer: () => Relay.QL`
 			fragment on Viewer {
+				login,
 				sites (first: 2147483647) {
 					edges {
 						node {
