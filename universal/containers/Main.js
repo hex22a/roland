@@ -3,7 +3,6 @@ import Relay from 'react-relay';
 
 import './common/main.pcss'
 
-import ContainerWrapperHOC from './ContainerWrapperHOC'
 import Container from '../components/Container/Container'
 import Menu from '../components/Menu/Menu'
 import AddSite from './AddSite'
@@ -11,7 +10,6 @@ import AddSite from './AddSite'
 import AddSiteMutation from '../mutations/AddSiteMutation'
 import RemoveSiteMutation from '../mutations/RemoveSiteMutation'
 
-@ContainerWrapperHOC
 class Main extends Component {
 	handleAddSite(site) {
 		const { name, url } = site;
@@ -23,7 +21,6 @@ class Main extends Component {
 
 	handleRemoveSite(id) {
 		const { relay, viewer } = this.props;
-		console.log(viewer);
 		relay.commitUpdate(
 			new RemoveSiteMutation({ id, viewer })
 		);

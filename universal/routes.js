@@ -8,12 +8,10 @@ export default [
 		path: '/',
 		component: MainContainer,
 		queries: ViewerQueries,
-		childRoutes: [
-			{
-				path: 'sign-up',
-				component: SignUp,
-				queries: ViewerQueries,
-			},
-		],
+	},
+	{
+		path: '/sign-up',
+		component: SignUp,
+		queries: ViewerQueries,
 	},
 ];

@@ -20,8 +20,9 @@ import {
 
 import config from 'config'
 import crypto from 'crypto'
+import bcrypt from 'bcrypt'
 import _ from 'lodash/core'
-import { listSites, getSite, saveSite, deleteSite } from '../server/api/service/db'
+import { listSites, getSite, saveSite, deleteSite, saveUser, getUser } from '../server/api/service/db'
 
 const { nodeInterface, nodeField } = nodeDefinitions(
   async globalId => {
@@ -140,6 +141,42 @@ const {
 } = connectionDefinitions({
 	name: 'Site',
 	nodeType: SiteType,
+});
+
+const SignUpMutation = mutationWithClientMutationId({
+	name: 'SignUp',
+	inputFields: {
+		id: {
+			type: new GraphQLNonNull(GraphQLString),
+		},
+		password: {
+			type: new GraphQLNonNull(GraphQLString),
+		},
+	},
+	outputFields: {
+		viewer: {
+			type: ViewerType,
+			resolve: async () => {
+				const sites = await listSites();
+				return { sites }
+			}
+		}
+	},
+	mutateAndGetPayload: async ({ id, password }) => {
+		let result = null;
+		const errors = [];
+
+		const existing = await getUser(id);
+		if (existing) {
+			errors.push('A user with this email address already exists.');
+		} else {
+			const user = { id };
+
+			user.password = bcrypt.hashSync(password, 8);
+			result = await saveUser(user);
+		}
+		return { user: result }
+	}
 });
 
 /**
@@ -261,6 +298,7 @@ const mutationType = new GraphQLObjectType({
 	fields: () => ({
 		addSite: AddSiteMutation,
 		removeSite: RemoveSiteMutation,
+		signUp: SignUpMutation,
 	}),
 });
 

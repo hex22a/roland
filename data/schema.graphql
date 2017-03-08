@@ -21,6 +21,7 @@ type AddSitePayload {
 type Mutation {
   addSite(input: AddSiteInput!): AddSitePayload
   removeSite(input: RemoveSiteInput!): RemoveSitePayload
+  signUp(input: SignUpInput!): SignUpPayload
 }
 
 # An object with an ID
@@ -66,6 +67,17 @@ type Root {
     # The ID of an object
     id: ID!
   ): Node
+}
+
+input SignUpInput {
+  id: String!
+  password: String!
+  clientMutationId: String
+}
+
+type SignUpPayload {
+  viewer: Viewer
+  clientMutationId: String
 }
 
 # A site object
