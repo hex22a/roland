@@ -115,7 +115,7 @@
     "react-router-relay": "^0.13.5",
     "rethinkdb": "^2.2.2",
     "rethinkdbdash": "^2.3.27",
-    "style-loader": "^0.13.0",
+    "style-loader": "^0.23.1",
     "stylelint": "^7.8.0",
     "superagent": "^2.2.0",
     "svg-inline-loader": "^0.7.1",
