@@ -121,8 +121,8 @@
     "svg-inline-loader": "^0.7.1",
     "svg-inline-react": "^1.0.1",
     "webpack": "2.1.0-beta.22",
-    "webpack-dev-middleware": "^1.9.0",
-    "webpack-dev-server": "2.1.0-beta.10",
+    "webpack-dev-middleware": "^5.3.4",
+    "webpack-dev-server": "4.0.0",
     "xmlhttprequest": "^1.8.0",
     "xss": "^0.2.10"
   },
