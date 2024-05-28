@@ -90,7 +90,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.13.0",
     "node-uuid": "^1.4.7",
-    "nodemailer": "^2.6.4",
+    "nodemailer": "^4.0.1",
     "nodemailer-smtp-transport": "^2.7.2",
     "normalize.css": "^5.0.0",
     "object-assign": "^4.0.1",
