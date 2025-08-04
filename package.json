@@ -85,7 +85,7 @@
     "immutable": "^3.7.6",
     "isomorphic-relay": "^0.7.4",
     "isomorphic-relay-router": "^0.8.6",
-    "jest": "^26.0.0",
+    "jest": "^27.0.0",
     "jsonwebtoken": "^7.1.9",
     "lodash": "^4.17.4",
     "moment": "^2.13.0",
